@@ -45,6 +45,11 @@ struct Plan {
     std::string expected_graduation_date;
     std::string audit_date;
     int max_credits_permitted = 0;
+    int audit_remaining_credits = 0;
+    int in_progress_credits = 0;
+    int remaining_credits = 0;
+    int average_credits_per_term = 0;
+    int unplanned_audit_credits = 0;
 };
 
 void classifyPrerequisites(DegreeRequirements &req,

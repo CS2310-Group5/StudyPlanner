@@ -55,7 +55,8 @@ static int areaForCourse(const Course&course,const std::vector<int>&areas){
     return 0;
 }
 
-bool canSatisfyChoiceGroup(const ChoiceGroup&group,
+static bool canSatisfyChoiceGroupSingle(
+                           const ChoiceGroup&group,
                            const std::vector<std::string>&candidates,
                            const std::unordered_map<std::string,Course>&courses){
     const auto belongsToChoiceArea=[&](const Course&course){
@@ -167,6 +168,25 @@ bool canSatisfyChoiceGroup(const ChoiceGroup&group,
         });
 }
 
+bool canSatisfyChoiceGroup(const ChoiceGroup&group,
+                           const std::vector<std::string>&candidates,
+                           const std::unordered_map<std::string,Course>&courses){
+    if(group.candidate_sets.empty())
+        return canSatisfyChoiceGroupSingle(group,candidates,courses);
+    ChoiceGroup singlePath=group;
+    singlePath.candidate_sets.clear();
+    for(const auto&candidateSet:group.candidate_sets){
+        std::vector<std::string> pathCandidates;
+        for(const auto&code:candidates)
+            if(std::find(candidateSet.begin(),candidateSet.end(),code)!=
+               candidateSet.end())
+                pathCandidates.push_back(code);
+        if(canSatisfyChoiceGroupSingle(singlePath,pathCandidates,courses))
+            return true;
+    }
+    return false;
+}
+
 void classifyPrerequisites(DegreeRequirements &req,
                            std::unordered_map<std::string,Course> &courses){
     std::unordered_set<std::string> completed;
@@ -233,6 +253,7 @@ Plan makePlan(const DegreeRequirements &req,
     plan.expected_graduation_date=req.expected_graduation_date;
     plan.audit_date=req.audit_date;
     plan.max_credits_permitted=req.max_credits_permitted;
+    plan.audit_remaining_credits=req.audit_remaining_credits;
 
     std::vector<std::string> seed;
     const auto addSeed=[&](const std::string&code){
@@ -320,7 +341,64 @@ Plan makePlan(const DegreeRequirements &req,
     }
     const int creditLimit=std::max(1,advancedStanding?
         config.advanced_standing_max_credits:config.default_max_credits);
-    const int targetCredits=advancedStanding?creditLimit:std::min(18,creditLimit);
+    const int defaultTarget=advancedStanding?creditLimit:
+        std::min(18,creditLimit);
+    std::unordered_map<std::string,int> inProgressCreditByCode;
+    for(const auto&detail:req.in_progress_details)
+        inProgressCreditByCode[detail.code]=detail.credits_known
+            ?detail.credits:3;
+    int knownRemainingCredits=0;
+    std::vector<bool> availableTerms(terms.size(),false);
+    for(const auto&code:order){
+        if(studying.count(code)||nonDegree.count(code))continue;
+        const auto courseIt=courses.find(code);
+        const auto chosenIt=chosen.find(code);
+        const Course*course=courseIt!=courses.end()?&courseIt->second:
+            (chosenIt!=chosen.end()?&chosenIt->second:nullptr);
+        const int credits=course&&course->credits_known?course->credits:3;
+        knownRemainingCredits+=credits;
+        if(!course)continue;
+        const std::string label=course->title+" "+code;
+        std::string lowered=label;
+        std::transform(lowered.begin(),lowered.end(),lowered.begin(),
+            [](unsigned char ch){return static_cast<char>(std::tolower(ch));});
+        if(lowered.find("internship")!=std::string::npos)continue;
+        const bool summerOnly=!course->semesters.empty()&&
+            std::find(course->semesters.begin(),course->semesters.end(),"Summer")!=
+                course->semesters.end()&&
+            std::none_of(course->semesters.begin(),course->semesters.end(),
+                [](const std::string&term){
+                    return term=="Semester A"||term=="Semester B"||
+                           (term!="Summer"&&term!="Not offered"&&term!="X");
+                });
+        if(summerOnly)continue;
+        for(size_t term=static_cast<size_t>(plan.start_term_index);
+            term<terms.size();++term)
+            if(hasOfferingInTerm(*course,terms[term]))
+                availableTerms[term]=true;
+    }
+    for(const auto&code:req.in_progress)
+        if(!nonDegree.count(code)){
+            auto credits=inProgressCreditByCode.find(code);
+            if(credits!=inProgressCreditByCode.end())
+                plan.in_progress_credits+=credits->second;
+            else{
+                const auto course=courses.find(code);
+                plan.in_progress_credits+=course!=courses.end()&&
+                    course->second.credits_known?course->second.credits:3;
+            }
+        }
+    plan.remaining_credits=req.audit_remaining_credits>0
+        ?std::max(0,req.audit_remaining_credits-plan.in_progress_credits)
+        :knownRemainingCredits;
+    const int averageBasis=std::max(plan.remaining_credits,
+                                    knownRemainingCredits);
+    const auto availableTermCount=static_cast<int>(std::count(
+        availableTerms.begin(),availableTerms.end(),true));
+    plan.average_credits_per_term=availableTermCount>0&&averageBasis>0
+        ?(averageBasis+availableTermCount-1)/availableTermCount
+        :defaultTarget;
+    const int targetCredits=std::clamp(plan.average_credits_per_term,1,creditLimit);
     std::vector<int> termCredits(terms.size(),0);
     std::unordered_map<std::string,size_t> scheduledTerm;
     std::unordered_set<std::string> manualPlacementCodes;
@@ -545,6 +623,19 @@ Plan makePlan(const DegreeRequirements &req,
     if(courseWarnings)
         plan.warnings.push_back(
             "One or more courses have placement or prerequisite warnings; review the notes in each semester box.");
+    if(plan.audit_remaining_credits>0) {
+        int scheduledDegreeCredits=0;
+        for(const auto&course:plan.courses)
+            if(!course.manual_placement&&course.counts_toward_degree)
+                scheduledDegreeCredits+=course.first_term_credits+
+                    course.second_term_credits;
+        plan.unplanned_audit_credits=std::max(
+            0,plan.audit_remaining_credits-scheduledDegreeCredits);
+        if(plan.unplanned_audit_credits>0)
+            plan.warnings.push_back(
+                std::to_string(plan.unplanned_audit_credits)+
+                " Degree Works credits are not represented by the listed or selected course requirements. Check unlisted major, stream, or programme requirements before relying on this schedule.");
+    }
     plan.warnings.insert(plan.warnings.end(),plan.issues.begin(),plan.issues.end());
     return plan;
 }
