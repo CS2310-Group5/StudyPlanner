@@ -38,15 +38,55 @@ std::vector<std::string> linesOf(const std::string &text) {
 std::string previousValue(const std::vector<std::string> &lines,
                           const std::string &label) {
     const std::string wanted=lower(label);
+    static const std::unordered_set<std::string> labels={
+        "name","student id","programme","college","level","degree","major",
+        "cohort","department","max credits permitted",
+        "expected graduation date","email","advisor","student mentor",
+        "worksheets","plans","links"
+    };
+    const auto validValue=[&](const std::string &candidate) {
+        const std::string normalized=lower(candidate);
+        if(candidate.empty()||labels.count(normalized)||normalized==wanted)
+            return false;
+        return !std::regex_match(normalized,std::regex(R"((name\s*){2,})"));
+    };
     for(size_t i=0;i<lines.size();++i) {
         const std::string current=lower(lines[i]);
         if(current==wanted) {
             for(size_t j=i;j>0;--j)
-                if(!lines[j-1].empty())return lines[j-1];
+                if(!lines[j-1].empty()) {
+                    if(validValue(lines[j-1]))return lines[j-1];
+                    break;
+                }
+            for(size_t j=i+1;j<lines.size();++j)
+                if(!lines[j].empty()) {
+                    if(validValue(lines[j]))return lines[j];
+                    break;
+                }
         }
         if(current.rfind(wanted+":",0)==0)return trim(lines[i].substr(label.size()+1));
     }
     return {};
+}
+
+std::string languagePathForCode(const std::string &code) {
+    if(code.rfind("LC24",0)==0)return "French";
+    if(code.rfind("LC25",0)==0)return "German";
+    if(code.rfind("LC26",0)==0)return "Spanish";
+    if(code.rfind("LC293",0)==0)return "Japanese";
+    if(code.rfind("LC297",0)==0)return "Korean";
+    if(code.rfind("PIA26",0)==0)return "Computational Language";
+    return {};
+}
+
+std::string languagePathForGroup(const ChoiceGroup &group) {
+    std::string path;
+    for(const auto &code:group.candidates) {
+        const std::string candidate=languagePathForCode(code);
+        if(candidate.empty()||(!path.empty()&&candidate!=path))return {};
+        path=candidate;
+    }
+    return path;
 }
 
 std::string capture(const std::string &text,const std::regex &pattern,
@@ -153,6 +193,13 @@ void parseMetadata(const std::string &text,
         std::regex_constants::icase));
     if(!maxCredits.empty()) {
         try { req.max_credits_permitted=std::stoi(maxCredits); }
+        catch(...) {}
+    }
+    const std::string auditCredits=capture(text,std::regex(
+        R"(\b(\d+)\s+Credit\s+Units?\s+needed\b)",
+        std::regex_constants::icase));
+    if(!auditCredits.empty()) {
+        try { req.audit_remaining_credits=std::stoi(auditCredits); }
         catch(...) {}
     }
     req.expected_graduation_date=capture(text,std::regex(
@@ -352,6 +399,66 @@ ChoiceGroup parseChoice(const std::smatch &match,const std::string &wholeText) {
     }
     return group;
 }
+
+std::vector<ChoiceGroup> parseChoiceGroups(const std::string &text) {
+    static const std::regex choicePattern(
+        R"((\d+)\s*(credits?|credit\s+units?|courses?|classes?)\s*(?:in|of|from)\s+(.+))",
+        std::regex_constants::icase);
+    static const std::regex eitherPattern(
+        R"(Either\s+(.+?)\s+can\s+be\s+chosen\s+to\s+fulfill\s+(.+))",
+        std::regex_constants::icase);
+    const auto lines=linesOf(text);
+    const bool hasAuditStatuses=std::regex_search(text,
+        std::regex(R"(\b(Not\s+complete|Still\s+needed)\b)",
+                   std::regex_constants::icase));
+    std::vector<ChoiceGroup> groups;
+    bool followingStillNeeded=false;
+    bool previousIncomplete=false;
+    for(size_t i=0;i<lines.size();++i) {
+        const std::string low=lower(lines[i]);
+        if(low.find("still needed")!=std::string::npos)
+            followingStillNeeded=true;
+        const bool incompleteLine=low.find("not complete")!=std::string::npos||
+                                  low.find("still needed")!=std::string::npos;
+        const bool eligibleLine=!hasAuditStatuses||incompleteLine||
+                                previousIncomplete||
+                                followingStillNeeded;
+        if(eligibleLine) {
+            for(std::sregex_iterator it(lines[i].begin(),lines[i].end(),
+                choicePattern),end;it!=end;++it) {
+                ChoiceGroup group=parseChoice(*it,text);
+                if(group.choose==0&&group.required_credits==0)continue;
+                if(group.candidates.empty()&&group.areas.empty())continue;
+                const auto same=std::find_if(groups.begin(),groups.end(),
+                    [&](const ChoiceGroup &existing) {
+                        return existing.choose==group.choose&&
+                               existing.required_credits==group.required_credits&&
+                               existing.candidates==group.candidates&&
+                               existing.areas==group.areas;
+                    });
+                if(same==groups.end())groups.push_back(std::move(group));
+            }
+            std::smatch either;
+            if(std::regex_search(lines[i],either,eitherPattern)) {
+                ChoiceGroup group;
+                group.choose=1;
+                group.candidates=courseCodes(either[1].str());
+                group.purpose=trim(either[2].str());
+                if(!group.candidates.empty())
+                    groups.push_back(std::move(group));
+            }
+        }
+        if(low=="in-progress"||low=="in progress"||
+           low=="legend"||low=="degree audit legend"||
+           low=="end of report"||
+           (low.find("met requirement")!=std::string::npos)||
+           (low.find("complete")!=std::string::npos&&
+            low.find("not complete")==std::string::npos))
+            followingStillNeeded=false;
+        previousIncomplete=incompleteLine;
+    }
+    return groups;
+}
 }
 
 DegreeRequirements parseDegreeWorks(const std::string &text) {
@@ -361,23 +468,70 @@ DegreeRequirements parseDegreeWorks(const std::string &text) {
     parseInProgressTable(lines,req);
     parseCompletedCourses(lines,req);
 
-    static const std::regex choicePattern(
-        R"((\d+)\s*(credits?|credit\s+units?|courses?|classes?)\s*(?:in|of|from)\s+(.+))",
-        std::regex_constants::icase);
-    std::vector<ChoiceGroup> groups;
-    for(std::sregex_iterator it(text.begin(),text.end(),choicePattern),end;it!=end;++it) {
-        ChoiceGroup group=parseChoice(*it,text);
-        if(group.choose==0&&group.required_credits==0)continue;
-        const auto same=std::find_if(groups.begin(),groups.end(),
-            [&](const ChoiceGroup &existing) {
-                return existing.choose==group.choose&&
-                       existing.required_credits==group.required_credits&&
-                       existing.candidates==group.candidates&&
-                       existing.areas==group.areas;
-            });
-        if(same==groups.end())groups.push_back(std::move(group));
+    req.choice_groups=parseChoiceGroups(text);
+
+    std::unordered_set<std::string> activeLanguagePaths;
+    for(const auto &code:req.in_progress) {
+        const std::string path=languagePathForCode(code);
+        if(!path.empty())activeLanguagePaths.insert(path);
     }
-    req.choice_groups=std::move(groups);
+    if(activeLanguagePaths.size()==1) {
+        const std::string activePath=*activeLanguagePaths.begin();
+        req.choice_groups.erase(std::remove_if(req.choice_groups.begin(),
+            req.choice_groups.end(),[&](ChoiceGroup &group) {
+                const std::string path=languagePathForGroup(group);
+                if(path.empty())return false;
+                if(path!=activePath)return true;
+                int completedCredits=0;
+                for(const auto&code:group.candidates)
+                    if(std::find(req.in_progress.begin(),req.in_progress.end(),
+                                 code)!=req.in_progress.end()){
+                        const auto detail=std::find_if(
+                            req.in_progress_details.begin(),
+                            req.in_progress_details.end(),
+                            [&code](const InProgressCourse&course){
+                                return course.code==code;
+                            });
+                        completedCredits+=detail!=req.in_progress_details.end()&&
+                            detail->credits_known?detail->credits:3;
+                    }
+                group.candidates.erase(std::remove_if(group.candidates.begin(),
+                    group.candidates.end(),[&](const std::string &code) {
+                        return std::find(req.in_progress.begin(),
+                                         req.in_progress.end(),code)!=
+                               req.in_progress.end();
+                    }),group.candidates.end());
+                group.required_credits=std::max(
+                    0,group.required_credits-completedCredits);
+                return group.required_credits==0||group.candidates.empty();
+            }),req.choice_groups.end());
+    } else if(activeLanguagePaths.empty()) {
+        std::vector<ChoiceGroup> languageOptions;
+        std::vector<ChoiceGroup> retained;
+        for(auto &group:req.choice_groups) {
+            if(group.required_credits==6&&!languagePathForGroup(group).empty())
+                languageOptions.push_back(std::move(group));
+            else
+                retained.push_back(std::move(group));
+        }
+        if(languageOptions.size()>1) {
+            ChoiceGroup combined;
+            combined.required_credits=6;
+            combined.purpose="one language or computational language option";
+            for(const auto &option:languageOptions) {
+                combined.candidate_sets.push_back(option.candidates);
+                for(const auto &code:option.candidates)
+                    if(std::find(combined.candidates.begin(),
+                                 combined.candidates.end(),code)==
+                       combined.candidates.end())
+                        combined.candidates.push_back(code);
+            }
+            retained.push_back(std::move(combined));
+        } else if(!languageOptions.empty()) {
+            retained.push_back(std::move(languageOptions.front()));
+        }
+        req.choice_groups=std::move(retained);
+    }
 
     std::unordered_set<std::string> inProgress(req.in_progress.begin(),
                                                 req.in_progress.end());
@@ -386,6 +540,9 @@ DegreeRequirements parseDegreeWorks(const std::string &text) {
     std::string neededText;
     bool inNeededList=false;
     bool inMajorSection=false;
+    const std::regex choicePattern(
+        R"((\d+)\s*(credits?|credit\s+units?|courses?|classes?)\s*(?:in|of|from)\s+(.+))",
+        std::regex_constants::icase);
     const std::regex neededCourseLine(
         R"(^\s*[A-Z]{2,5}\s*[0-9]{4}[A-Z]?\b)",
         std::regex_constants::icase);
