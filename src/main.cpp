@@ -848,13 +848,15 @@ int main(int argc,char**argv){
     std::vector<std::vector<std::string>> rankedChoiceGroups =
         std::move(picker.ranked_groups);
     Plan plan=makePlan(req,courses,chosen,config,advanced);
-    const int workloadTarget=advanced?config.advanced_standing_max_credits:
+    const int preferredWorkload=advanced?config.advanced_standing_max_credits:
         std::min(18,config.default_max_credits);
+    const int workloadTarget=std::max(3,
+        std::min(plan.average_credits_per_term,preferredWorkload));
     const int semesterMaximum=advanced?config.advanced_standing_max_credits:
         config.default_max_credits;
     std::map<std::string,int> termCredits;
     for(const auto&course:plan.courses){
-        if(course.manual_placement)continue;
+        if(course.manual_placement||course.requirement=="In progress")continue;
         termCredits[course.year_semester]+=course.first_term_credits;
         if(!course.second_year_semester.empty())
             termCredits[course.second_year_semester]+=course.second_term_credits;
@@ -966,7 +968,7 @@ int main(int argc,char**argv){
             plan=makePlan(req,courses,chosen,config,advanced);
             termCredits.clear();
             for(const auto&course:plan.courses){
-                if(course.manual_placement)continue;
+                if(course.manual_placement||course.requirement=="In progress")continue;
                 termCredits[course.year_semester]+=course.first_term_credits;
                 if(!course.second_year_semester.empty())
                     termCredits[course.second_year_semester]+=course.second_term_credits;
