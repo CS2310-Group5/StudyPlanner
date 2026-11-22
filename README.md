@@ -71,6 +71,19 @@ The output workbook is generated independently of the SPARK template. Academic y
 python3 auth_helper.py --state session_state.json --page-text page_text.txt --courses-db courses_db.json
 ```
 
+The helper always waits for you to finish manual login/MFA and open the fully
+loaded worksheet before reading it. Return to the terminal and press Enter;
+`Q` cancels. Login/loading pages are rejected instead of being saved as an audit.
+A successful read saves both the session and the worksheet, including when an
+existing browser session did not redirect through a recognizable login URL.
+An unreadable saved session falls back to a new manual sign-in.
+
+Offline helper regression tests (no browser or student account required):
+
+```bash
+.venv/bin/python tests/test_auth_helper.py
+```
+
 Exit codes:
 
 | Code | Meaning |
