@@ -165,10 +165,18 @@ The existing JSON interface is preserved to maintain compatibility with the C++ 
 
 ## Excel Regression Testing
 
-Run the following command from the project root:
+Run the following command from the project root.
+
+### macOS / Linux
 
 ```bash
-python3 tests/test_excel_export.py
+.venv/bin/python tests/test_excel_export.py
+```
+
+### Windows
+
+```powershell
+.venv\Scripts\python.exe tests\test_excel_export.py
 ```
 
 The tests verify:
@@ -178,6 +186,3 @@ The tests verify:
 3. Manual course placement and workbook layout.
 
 These tests use simulated course data and do not require an internet connection or Degree Works authentication.
-
-## Excel Export
-## Excel Regression Testing
