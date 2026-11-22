@@ -106,6 +106,21 @@ Logs are written at `.cityu_logs/errors.log` in the per-user application-data di
 
 Prerequisite readiness is the primary ranking factor (base scores: SATISFIED 4000, SCHEDULED 3000, UNKNOWN 2000, UNSCHEDULED 1000, on top of a shared 10000 baseline). A matching topic the user marked as not preferred subtracts 100; each matching assessment preference subtracts 10. Thus user preferences adjust order within readiness tiers rather than outweighing a prerequisite-readiness tier. Semester availability is used by scheduling and overload review, not as a preference score. No score floor is used; candidates are paged in groups of up to 20.
 
+## D — Elective preference fixes
+
+Grouped topic choices such as `religion/philosophy` now match either topic in
+catalogue area/tag metadata. Matching both still applies only one topic penalty;
+`none / all fine` leaves the ranking unchanged.
+
+Assessment dislikes affect ranking only when assessment data is confirmed.
+Matches use assessment text/components, not general topic tags. Unknown assessment
+information is left neutral rather than guessed. Prerequisite readiness remains
+the primary ranking factor, and preferences do not remove eligible courses.
+
+Regression coverage in `tests/test_main.cpp` uses synthetic courses to check
+grouped topics, neutral preferences, unknown assessment data, topic-only tags,
+and confirmed assessment components.
+
 ## `courses_db.json` schema
 
 The top-level object maps course codes to course objects:
