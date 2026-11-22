@@ -115,9 +115,15 @@ int candidateScore(const Course &course,
     if (!preferences.empty()) {
         for (const auto &disliked : preferences[0]) {
             if (disliked.find("all fine") != std::string::npos) continue;
-            bool matches = hasText(course.area, disliked);
-            for (const auto &tag : course.tags)
-                matches = matches || hasText(tag, disliked);
+            // Labels such as religion/philosophy describe alternative topics.
+            bool matches = false;
+            std::istringstream topics(disliked);
+            std::string topic;
+            while (std::getline(topics, topic, '/')) {
+                matches = matches || hasText(course.area, topic);
+                for (const auto &tag : course.tags)
+                    matches = matches || hasText(tag, topic);
+            }
             if (matches) {
                 score -= 100;
                 break;
@@ -125,12 +131,11 @@ int candidateScore(const Course &course,
         }
     }
 
-    if (preferences.size() > 1) {
+    if (preferences.size() > 1 && !course.assessment.unknown) {
+        // Topic tags are not evidence of an assessment component.
         std::string assessmentText = course.assessment.raw_text;
         for (const auto &item : course.assessment.raw_items)
             assessmentText += " " + item;
-        for (const auto &tag : course.tags)
-            assessmentText += " " + tag;
         for (const auto &disliked : preferences[1]) {
             if (disliked.find("all fine") != std::string::npos) continue;
             const bool matches = disliked == "100% continuous assessment"
