@@ -69,6 +69,9 @@ if(BUILD_TESTING)
   if(NOT STUDYPLAN_OPENPYXL_RESULT EQUAL 0)
     message(FATAL_ERROR "The demo Excel test requires openpyxl in ${STUDYPLAN_TEST_PYTHON}")
   endif()
+  add_test(NAME cityu_auth_helper
+      COMMAND "${STUDYPLAN_TEST_PYTHON}"
+              "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_auth_helper.py")
   add_test(NAME cityu_demo_excel
       COMMAND "${STUDYPLAN_TEST_PYTHON}"
               "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_demo_excel.py"
