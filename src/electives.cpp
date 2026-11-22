@@ -163,6 +163,18 @@ std::string validateChoiceSelection(
     if (selected.empty()) return "Select at least one course.";
     std::set<std::string> unique(selected.begin(), selected.end());
     if (unique.size() != selected.size()) return "Select each course only once.";
+    if (!group.candidate_sets.empty()) {
+        const bool onePath = std::any_of(group.candidate_sets.begin(),
+            group.candidate_sets.end(), [&selected](const auto &candidateSet) {
+                return std::all_of(selected.begin(), selected.end(),
+                    [&candidateSet](const std::string &code) {
+                        return std::find(candidateSet.begin(), candidateSet.end(),
+                                         code) != candidateSet.end();
+                    });
+            });
+        if (!onePath)
+            return "Choose all courses from the same language option.";
+    }
     if (group.choose > 0 &&
         selected.size() != static_cast<size_t>(group.choose))
         return "Select exactly " + std::to_string(group.choose) + " courses.";
@@ -276,6 +288,8 @@ ElectivePickerResult selectElectives(
             }
             std::cout << "\n";
         }
+        if (!group.candidate_sets.empty())
+            printInfo("Choose courses from one language option only; do not mix options.");
         printInfo("Candidates are ranked by your preferences and prerequisite readiness. Missing credits default to 3.");
         if (group.choose > static_cast<int>(ranked.size())) {
             selection.note =

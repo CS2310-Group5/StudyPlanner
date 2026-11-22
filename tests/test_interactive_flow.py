@@ -689,7 +689,11 @@ def main():
         assumed_course = course_block(schedule, "MISS9001")
         if not assumed_course or "Confirm offering" not in assumed_course:
             raise AssertionError("Missing offering terms should use the Semester A/B assumption")
-        if "PLANNING WARNINGS" not in str(schedule["A20"].value):
+        if not any(
+            "PLANNING WARNINGS" in str(cell.value)
+            for row in schedule.iter_rows()
+            for cell in row
+        ):
             raise AssertionError("Missing catalogue information should trigger a visible workbook warning")
         no_information = course_block(schedule, "NOIN9001")
         if not no_information or "3 credits assumed" not in no_information:
@@ -1516,6 +1520,103 @@ def main():
         raise AssertionError("Preference questions appeared before data feasibility was known")
     if "Study plan saved to:" not in blocked.stdout:
         raise AssertionError("Catalogue cooldown prevented workbook generation")
+
+    alternate_major_root = data_root / "alternate-major"
+    alternate_major_directory, _ = user_data_directory(alternate_major_root)
+    alternate_major_report = (
+        "Expected Graduation Date 01-Jun-2030\n"
+        "Audit Date 22/11/2026\n"
+        "105 Credit Units needed\n"
+        "College Requirements\n"
+        "6 Credit Units from Foreign language component or Computational language component Not complete\n"
+        "Still needed:\n"
+        "French Language Not complete\n"
+        "6 Credits in LC 2401 or 2412 or 2406\n"
+        "German Language Not complete\n"
+        "6 Credits in LC 2501 or 2512 or 2506\n"
+        "Japanese Language Not complete\n"
+        "Still needed: 3 Credits in LC 2931\n"
+        "Korean Language Not complete\n"
+        "6 Credits in LC 2973 or 2974\n"
+        "Spanish Language Not complete\n"
+        "6 Credits in LC 2601 or 2612 or 2606\n"
+        "Computational Language Not complete\n"
+        "6 Credits in PIA 2601 or 2602\n"
+        "Major in Public Affairs and Management\n"
+        "Stream Information Not Available Not complete\n"
+        "Either PIA 3800 or CAI 4001 can be chosen to fulfill stream electives requirements\n"
+        "In-progress\n"
+        "Course\tTitle\tGrade\tCredits\tTerm\n"
+        "LC 2930\tJapanese 1\tNA\t(3)\tSem A 2026/27\n"
+        "Legend\n"
+    )
+    prepare_user_data(alternate_major_directory, alternate_major_report)
+    alternate_major_catalogue = {}
+    for code, title in (
+        ("LC2930", "Japanese 1"),
+        ("LC2931", "Japanese 2"),
+        ("PIA3800", "Public Affairs Stream Course"),
+        ("CAI4001", "Artificial Intelligence Stream Course"),
+    ):
+        alternate_major_catalogue[code] = {
+            "title": title,
+            "credits": 3,
+            "semesters": ["Semester A", "Semester B"],
+            "prerequisites": [],
+            "prerequisites_text": "None",
+            "catalogue_year": "2027/28",
+            "catalogue_detail_available": True,
+            "url": "",
+        }
+    (alternate_major_directory / "courses_db.json").write_text(
+        json.dumps(alternate_major_catalogue), encoding="utf-8"
+    )
+    alternate_major, _ = run(
+        executable, alternate_major_root, "1\nO\nD\n1\n"
+    )
+    if alternate_major.returncode != 0:
+        raise AssertionError(
+            "The other-major Degree Works CLI flow failed:\n"
+            f"{alternate_major.stdout}\n{alternate_major.stderr}"
+        )
+    if "LC 2401 or 2412" in alternate_major.stdout or \
+       "LC 2501 or 2512" in alternate_major.stdout or \
+       "LC 2973 or 2974" in alternate_major.stdout or \
+       "LC 2601 or 2612" in alternate_major.stdout or \
+       "PIA 2601 or 2602" in alternate_major.stdout:
+        raise AssertionError(
+            "The selected in-progress Japanese path still prompted for unrelated language options"
+        )
+    if "stream electives requirements" not in alternate_major.stdout or \
+       "PIA3800" not in alternate_major.stdout or "CAI4001" not in alternate_major.stdout:
+        raise AssertionError("The explicit major stream choice was not detected")
+    alternate_major_output = re.search(
+        r"Study plan saved to:\s*\n\s*(.+\.xlsx)", alternate_major.stdout
+    )
+    if not alternate_major_output:
+        raise AssertionError("The other-major CLI flow did not produce a workbook")
+    alternate_major_book = load_workbook(
+        alternate_major_output.group(1), data_only=True
+    )
+    try:
+        schedule = alternate_major_book["Study Schedule"]
+        if not course_block(schedule, "LC2930") or \
+           not course_block(schedule, "LC2931"):
+            raise AssertionError(
+                "The in-progress Japanese course or its remaining follow-up was omitted"
+            )
+        selections = list(
+            alternate_major_book["Elective Selections"].iter_rows(
+                min_row=3, values_only=True
+            )
+        )
+        selected = [row[2] for row in selections if row and row[2]]
+        if selected != ["PIA3800"]:
+            raise AssertionError(
+                f"The workbook did not retain the selected stream course: {selected}"
+            )
+    finally:
+        alternate_major_book.close()
 
     delete_root = data_root / "delete-command"
     delete_directory, _ = user_data_directory(delete_root)
