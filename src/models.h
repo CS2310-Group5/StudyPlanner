@@ -46,6 +46,7 @@ struct ChoiceGroup {
     int choose = 0;
     int required_credits = 0;
     std::vector<std::string> candidates;
+    std::vector<std::vector<std::string>> candidate_sets;
     std::vector<int> areas;
     int minimum_per_area_credits = 0;
     std::string purpose;
@@ -82,6 +83,7 @@ struct DegreeRequirements {
     std::string current_semester;
     std::string entry_status;
     int max_credits_permitted = 0;
+    int audit_remaining_credits = 0;
     int remaining_years = 0;
     bool conflicting_in_progress_terms = false;
     bool illustrative = false;
