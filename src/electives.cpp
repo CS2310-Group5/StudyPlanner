@@ -17,8 +17,22 @@ std::string lowercase(std::string value) {
 }
 
 bool hasText(const std::string &text, const std::string &term) {
-    return !term.empty() &&
-        lowercase(text).find(lowercase(term)) != std::string::npos;
+    if (term.empty()) return false;
+    const std::string haystack = lowercase(text);
+    const std::string needle = lowercase(term);
+    size_t pos = 0;
+    while ((pos = haystack.find(needle, pos)) != std::string::npos) {
+        const size_t end = pos + needle.size();
+        const bool left = pos == 0 || !std::isalnum(
+            static_cast<unsigned char>(haystack[pos - 1]));
+        const bool right = end == haystack.size() || !std::isalnum(
+            static_cast<unsigned char>(haystack[end])) ||
+            (haystack[end] == 's' && (end + 1 == haystack.size() ||
+             !std::isalnum(static_cast<unsigned char>(haystack[end + 1]))));
+        if (left && right) return true;
+        ++pos;
+    }
+    return false;
 }
 
 std::string uppercase(std::string value) {
@@ -40,11 +54,12 @@ bool parsePositiveInteger(const std::string &value, int &result) {
 }
 
 std::string prerequisiteSummary(const Course &course,
-                                const DegreeRequirements &requirements) {
+                                const DegreeRequirements &requirements,
+                                const std::unordered_map<std::string, Course> &chosen) {
     if (course.prerequisite_source == "UNKNOWN" ||
         std::find(course.prerequisites.begin(), course.prerequisites.end(),
                   "UNKNOWN") != course.prerequisites.end())
-        return {};
+        return "Prerequisites: Unknown (confirm in catalogue)";
     if (course.prerequisites.empty())
         return course.prerequisites_text.empty()
             ? "Prerequisites: None"
@@ -61,7 +76,8 @@ std::string prerequisiteSummary(const Course &course,
     planned.insert(requirements.major_courses.begin(),
                    requirements.major_courses.end());
     for (const auto &group : requirements.choice_groups)
-        planned.insert(group.candidates.begin(), group.candidates.end());
+        for (const auto &code : group.candidates) planned.erase(code);
+    for (const auto &entry : chosen) planned.insert(entry.first);
 
     std::string result = "Prerequisites: ";
     for (size_t i = 0; i < course.prerequisites.size(); ++i) {
@@ -86,7 +102,12 @@ bool courseMatchesArea(const Course &course, const std::vector<int> &areas) {
         std::string normalized = lowercase(value);
         normalized.erase(std::remove_if(normalized.begin(), normalized.end(),
             [](unsigned char ch) { return std::isspace(ch); }), normalized.end());
-        return normalized.find("area" + std::to_string(area)) != std::string::npos;
+        const std::string label = "area" + std::to_string(area);
+        const size_t pos = normalized.find(label);
+        if (pos == std::string::npos) return false;
+        const size_t end = pos + label.size();
+        return (pos == 0 || !std::isalnum(static_cast<unsigned char>(normalized[pos - 1]))) &&
+            (end == normalized.size() || !std::isdigit(static_cast<unsigned char>(normalized[end])));
     };
     for (int area : areas) {
         if (matches(course.area, area)) return true;
@@ -179,6 +200,12 @@ std::string validateChoiceSelection(
         selected.size() != static_cast<size_t>(group.choose))
         return "Select exactly " + std::to_string(group.choose) + " courses.";
 
+    if (!group.candidates.empty()) {
+        for (const auto &code : selected)
+            if (std::find(group.candidates.begin(), group.candidates.end(), code) ==
+                group.candidates.end())
+                return "Course " + code + " is not listed for this requirement.";
+    }
     int totalCredits = 0;
     std::unordered_map<int, int> areaCredits;
     for (const auto &code : selected) {
@@ -227,7 +254,7 @@ ElectivePickerResult selectElectives(
     bool illustrative) {
     ElectivePickerResult result;
     result.ranked_groups.resize(requirements.choice_groups.size());
-    result.selections.reserve(requirements.choice_groups.size());
+    result.selections.resize(requirements.choice_groups.size());
     const auto order = orderChoiceGroups(requirements.choice_groups);
 
     for (size_t orderIndex = 0; orderIndex < order.size(); ++orderIndex) {
@@ -245,7 +272,7 @@ ElectivePickerResult selectElectives(
         if (!feasible_groups[groupIndex]) {
             selection.note =
                 "Not selected: verified catalogue data is insufficient to complete this Degree Works choice.";
-            result.selections.push_back(std::move(selection));
+            result.selections[groupIndex] = std::move(selection);
             continue;
         }
 
@@ -261,7 +288,7 @@ ElectivePickerResult selectElectives(
             selection.note =
                 "Not selected: the remaining verified candidates cannot complete this choice.";
             printWarning(selection.note);
-            result.selections.push_back(std::move(selection));
+            result.selections[groupIndex] = std::move(selection);
             continue;
         }
         if (group.required_credits > 0)
@@ -295,7 +322,7 @@ ElectivePickerResult selectElectives(
             selection.note =
                 "Not selected: fewer verified candidates are available than Degree Works requires.";
             printWarning(selection.note);
-            result.selections.push_back(std::move(selection));
+            result.selections[groupIndex] = std::move(selection);
             continue;
         }
         std::stable_sort(ranked.begin(), ranked.end(),
@@ -333,7 +360,8 @@ ElectivePickerResult selectElectives(
             if ((group.choose > 0 &&
                  selectedCount != group.choose) ||
                 (group.required_credits > 0 &&
-                 selectedCredits != group.required_credits)) {
+                 selectedCredits != group.required_credits) ||
+                !validateChoiceSelection(group, selection.course_codes, courses).empty()) {
                 for (const auto &code : selection.course_codes)
                     chosen.erase(code);
                 selection.course_codes.clear();
@@ -350,7 +378,7 @@ ElectivePickerResult selectElectives(
                         (course.credits_known ? ")" : ", assumed)"));
                 }
             }
-            result.selections.push_back(std::move(selection));
+            result.selections[groupIndex] = std::move(selection);
             continue;
         }
 
@@ -393,7 +421,7 @@ ElectivePickerResult selectElectives(
                 const int area = courseArea(it->second);
                 if (area > 0) std::cout << "     Area " << area << "\n";
                 const std::string prerequisites =
-                    prerequisiteSummary(it->second, requirements);
+                    prerequisiteSummary(it->second, requirements, chosen);
                 if (!prerequisites.empty())
                     std::cout << "     " << prerequisites << "\n";
                 if (!it->second.semesters.empty()) {
@@ -410,12 +438,19 @@ ElectivePickerResult selectElectives(
                         std::cout << " (provisionally treated as Semester A/B)";
                     std::cout << "\n";
                 }
-                if (it->second.assessment.exam_percent &&
+                if (it->second.semesters.empty() ||
+                    std::find(it->second.semesters.begin(), it->second.semesters.end(), "X") !=
+                        it->second.semesters.end())
+                    std::cout << "     Offering unconfirmed: provisionally treated as Semester A/B, not Summer\n";
+                if (!it->second.assessment.unknown &&
+                    it->second.assessment.exam_percent &&
                     it->second.assessment.other_percent)
                     std::cout << "     Assessment: Exam "
                         << *it->second.assessment.exam_percent
                         << "%; coursework "
                         << *it->second.assessment.other_percent << "%\n";
+                else
+                    std::cout << "     Assessment: Unknown / unconfirmed (no preference penalty)\n";
                 const std::string url = it->second.url.empty()
                     ? "https://www.cityu.edu.hk/catalogue/ug/current/course/" +
                         code + ".htm"
@@ -491,8 +526,16 @@ ElectivePickerResult selectElectives(
             const std::string picks = readPrompt(
                 requirement +
                 "; enter the numbers above, separated by commas");
+            if (uppercase(picks) == "M") {
+                if (visibleCount < displayOrder.size()) {
+                    const size_t end = pageEnd(visibleCount);
+                    printCandidatePage(visibleCount, end);
+                    visibleCount = end;
+                } else printInfo("All candidates are already shown.");
+                continue;
+            }
             std::vector<int> ids;
-            bool bad = false;
+            bool bad = !picks.empty() && picks.back() == ',';
             std::istringstream pickStream(picks);
             std::string token;
             while (std::getline(pickStream, token, ',')) {
@@ -538,7 +581,7 @@ ElectivePickerResult selectElectives(
             std::cout << "\n";
             break;
         }
-        result.selections.push_back(std::move(selection));
+        result.selections[groupIndex] = std::move(selection);
     }
     return result;
 }
