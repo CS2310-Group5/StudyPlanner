@@ -74,6 +74,44 @@ int main(){
            candidateScore(unreadyCandidate,{}));
     assert(candidateScore(readyCandidate,{})>
            candidateScore(readyCandidate,strongestDislikes));
+    // D: grouped topic labels must match either topic in catalogue metadata.
+    Course philosophyCandidate;
+    philosophyCandidate.prereq_status=PrereqStatus::SATISFIED;
+    philosophyCandidate.tags={"philosophy"};
+    assert(candidateScore(philosophyCandidate,{{"religion/philosophy"}})==
+           candidateScore(philosophyCandidate,{})-100);
+    philosophyCandidate.area="religion";
+    // Matching both alternatives still applies only one topic penalty.
+    assert(candidateScore(philosophyCandidate,{{"religion/philosophy"}})==
+           candidateScore(philosophyCandidate,{})-100);
+    philosophyCandidate.area="history";
+    philosophyCandidate.tags={"culture"};
+    assert(candidateScore(philosophyCandidate,{{"religion/philosophy"}})==
+           candidateScore(philosophyCandidate,{}));
+    assert(candidateScore(philosophyCandidate,{{"none / all fine"}})==
+           candidateScore(philosophyCandidate,{}));
+
+    const std::vector<std::vector<std::string>> assessmentDislikes={
+        {}, {"100% continuous assessment","group project","presentation"}
+    };
+    Course unknownAssessment=readyCandidate;
+    unknownAssessment.assessment.unknown=true;
+    assert(candidateScore(unknownAssessment,assessmentDislikes)==
+           candidateScore(unknownAssessment,{}));
+    Course topicOnlyAssessment=readyCandidate;
+    topicOnlyAssessment.assessment.exam_percent=50;
+    topicOnlyAssessment.assessment.other_percent=50;
+    topicOnlyAssessment.assessment.raw_text.clear();
+    topicOnlyAssessment.tags={"group project","presentation"};
+    assert(candidateScore(topicOnlyAssessment,assessmentDislikes)==
+           candidateScore(topicOnlyAssessment,{}));
+    // Confirmed assessment components remain eligible for preference matching.
+    topicOnlyAssessment.assessment.raw_items={"Group Project", "Presentation"};
+    assert(candidateScore(topicOnlyAssessment,assessmentDislikes)==
+           candidateScore(topicOnlyAssessment,{})-20);
+    assert(candidateScore(readyCandidate,assessmentDislikes)==
+           candidateScore(readyCandidate,{})-30);
+
     Course scannedData;
     scannedData.code="SCAN1001";
     scannedData.title="New catalogue title";
