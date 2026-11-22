@@ -319,6 +319,110 @@ int main(){
     assert(degreeWorksSample.choice_groups[1].areas==
            std::vector<int>({1,2,3}));
     assert(degreeWorksSample.choice_groups[1].minimum_per_area_credits==3);
+    const auto alternateMajorAudit=parseDegreeWorks(
+        "105 Credit Units needed\n"
+        "College Requirements\n"
+        "6 Credit Units from Foreign language component or Computational language component Not complete\n"
+        "Still needed:\n"
+        "French Language Not complete\n"
+        "6 Credits in LC 2401 or 2412 or 2406\n"
+        "German Language Not complete\n"
+        "6 Credits in LC 2501 or 2512 or 2506\n"
+        "Japanese Language Not complete\n"
+        "LC 2930\tJapanese 1\tNA\t(3)\tSem A 2026/27\n"
+        "Still needed: 3 Credits in LC 2931\n"
+        "Korean Language Not complete\n"
+        "6 Credits in LC 2973 or 2974\n"
+        "Spanish Language Not complete\n"
+        "6 Credits in LC 2601 or 2612 or 2606\n"
+        "Computational Language Not complete\n"
+        "6 Credits in PIA 2601 or 2602\n"
+        "Stream Information Not Available Not complete\n"
+        "Either PIA 3800 or CAI 4001 can be chosen to fulfill stream electives requirements\n"
+        "In-progress\n"
+        "Course\tTitle\tGrade\tCredits\tTerm\n"
+        "LC 2930\tJapanese 1\tNA\t(3)\tSem A 2026/27\n"
+        "Legend\n");
+    assert(alternateMajorAudit.audit_remaining_credits==105);
+    assert(alternateMajorAudit.in_progress==std::vector<std::string>{"LC2930"});
+    assert(alternateMajorAudit.in_progress_details[0].credits==3);
+    assert(alternateMajorAudit.choice_groups.size()==2);
+    const auto japaneseRequirement=std::find_if(
+        alternateMajorAudit.choice_groups.begin(),
+        alternateMajorAudit.choice_groups.end(),[](const ChoiceGroup&group){
+            return group.candidates==std::vector<std::string>{"LC2931"};
+        });
+    assert(japaneseRequirement!=alternateMajorAudit.choice_groups.end());
+    const auto streamRequirement=std::find_if(
+        alternateMajorAudit.choice_groups.begin(),
+        alternateMajorAudit.choice_groups.end(),[](const ChoiceGroup&group){
+            return group.candidates==
+                std::vector<std::string>({"PIA3800","CAI4001"});
+        });
+    assert(streamRequirement!=alternateMajorAudit.choice_groups.end());
+    assert(streamRequirement->choose==1);
+
+    const auto alternateLanguageChoices=parseDegreeWorks(
+        "Still needed:\n"
+        "6 credits in LC 2401 or 2412 or 2406\n"
+        "Still needed:\n"
+        "6 credits in LC 2501 or 2512 or 2506\n");
+    assert(alternateLanguageChoices.choice_groups.size()==1);
+    assert(alternateLanguageChoices.choice_groups[0].candidate_sets.size()==2);
+    std::unordered_map<std::string,Course> languageCourses;
+    for(const auto&code:alternateLanguageChoices.choice_groups[0].candidates) {
+        Course course;
+        course.code=code;
+        course.credits=3;
+        course.credits_known=true;
+        course.semesters={"Semester A","Semester B"};
+        languageCourses.emplace(code,course);
+    }
+    assert(validateChoiceSelection(alternateLanguageChoices.choice_groups[0],
+        {"LC2401","LC2412"},languageCourses).empty());
+    assert(validateChoiceSelection(alternateLanguageChoices.choice_groups[0],
+        {"LC2401","LC2501"},languageCourses).find("same language option")!=
+           std::string::npos);
+
+    DegreeRequirements balancedAudit;
+    balancedAudit.remaining_years=2;
+    balancedAudit.audit_remaining_credits=36;
+    balancedAudit.in_progress={"ZZ1001"};
+    InProgressCourse currentProgressDetail;
+    currentProgressDetail.code="ZZ1001";
+    currentProgressDetail.credits=3;
+    currentProgressDetail.credits_known=true;
+    currentProgressDetail.term="Semester A";
+    balancedAudit.in_progress_details={currentProgressDetail};
+    for(int number=2;number<=7;++number)
+        balancedAudit.required_courses.push_back(
+            "ZZ"+std::to_string(1000+number));
+    std::unordered_map<std::string,Course> balancedCourseRecords;
+    Course currentDetails;
+    currentDetails.code="ZZ1001";
+    currentDetails.credits=3;
+    currentDetails.credits_known=true;
+    currentDetails.semesters={"Semester A","Semester B"};
+    balancedCourseRecords.emplace(currentDetails.code,currentDetails);
+    for(const auto&code:balancedAudit.required_courses) {
+        Course course;
+        course.code=code;
+        course.credits=3;
+        course.credits_known=true;
+        course.semesters={"Semester A","Semester B"};
+        balancedCourseRecords.emplace(code,course);
+    }
+    const Plan balancedSchedule=makePlan(
+        balancedAudit,balancedCourseRecords,{},loadedConfig,false);
+    assert(balancedSchedule.audit_remaining_credits==36);
+    assert(balancedSchedule.in_progress_credits==3);
+    assert(balancedSchedule.remaining_credits==33);
+    assert(balancedSchedule.average_credits_per_term==11);
+    assert(balancedSchedule.unplanned_audit_credits==15);
+    for(const auto&course:balancedSchedule.courses)
+        if(course.requirement!="In progress")
+            assert(course.year_semester!="Year 1 Semester A");
+
     const auto conflictingTerms=parseDegreeWorks(
         "In-progress\n"
         "Course\tTitle\tGrade\tCredits\tTerm\n"
