@@ -106,6 +106,39 @@ Logs are written at `.cityu_logs/errors.log` in the per-user application-data di
 
 Prerequisite readiness is the primary ranking factor (base scores: SATISFIED 4000, SCHEDULED 3000, UNKNOWN 2000, UNSCHEDULED 1000, on top of a shared 10000 baseline). A matching topic the user marked as not preferred subtracts 100; each matching assessment preference subtracts 10. Thus user preferences adjust order within readiness tiers rather than outweighing a prerequisite-readiness tier. Semester availability is used by scheduling and overload review, not as a preference score. No score floor is used; candidates are paged in groups of up to 20.
 
+## D — Elective ranking and selection review
+
+Elective preferences adjust recommendation order; they do not remove eligible
+courses. Prerequisite readiness remains the primary ranking factor. Topic choices
+such as `religion/philosophy` match either topic, once per course. Word boundaries
+prevent `art` from matching `earth`, while allowing the plural `arts`. Assessment
+matching uses confirmed assessment text/components only, never general topic tags
+or unknown assessment data.
+
+The current assessment question asks which of 100% continuous assessment, group
+projects, and presentations the user does not prefer. `none / all fine` keeps
+assessment ranking neutral and cannot be combined with another answer. Multiple
+letters and lowercase input work; `P` returns to the topic question. These are
+optional dislikes, not additional degree requirements or guaranteed assessment
+filters. Matching depends on the catalogue metadata available for each course.
+
+| D check | Behavior and regression coverage |
+| --- | --- |
+| Ranking | Readiness takes priority; grouped topics and known assessments adjust scores; unknown assessments stay neutral. |
+| Requirements | Reject duplicate choices, wrong course counts/credit totals, and courses outside a populated candidate list. Preserve the latest language-option validation. |
+| Areas | Enforce distinct-area credit requirements; show Area subsections; Area 10 is not Area 1. Existing synthetic CLI tests verify displayed numbering and area selections. |
+| Multiple requirements | Process smaller groups first but return selections at their original requirement indexes for workload review. |
+| Input and paging | Reject invalid/unseen rows and trailing commas. `M` works at the course-selection prompt, including after initially skipping the next page. Equal-score ties stay together. |
+| Unknown data | Label unconfirmed assessments/prerequisites and assumed 3-credit values. Missing/X offerings show the Semester A/B assumption without changing catalogue data. |
+| Prerequisite details | Distinguish completed, in-progress and actually selected/planned courses; an unselected alternative is not shown as already planned. |
+| Example mode | Validate the chosen example against count, credits, area and language rules before accepting it. |
+
+Tests use synthetic courses/audits and local fixtures. Run the normal CMake build
+and `ctest --test-dir build --output-on-failure`. This review does not verify a
+real student's Degree Works requirements or live catalogue completeness; those
+still depend on the input audit and the acquisition/scan modules. The offline
+demo is a catalogue example, not a student's full degree plan.
+
 ## `courses_db.json` schema
 
 The top-level object maps course codes to course objects:
