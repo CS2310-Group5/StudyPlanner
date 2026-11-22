@@ -1007,6 +1007,105 @@ int main(){
     std::cin.rdbuf(oldInput);
     std::cout.rdbuf(oldOutput);
 
+    // D review: invalid catalogue substitutions and area-prefix lookalikes.
+    ChoiceGroup restrictedChoice;
+    restrictedChoice.choose=1;
+    restrictedChoice.candidates={"EL1001"};
+    assert(validateChoiceSelection(restrictedChoice,{"EL1002"},electiveCourses)
+        .find("not listed")!=std::string::npos);
+    assert(!validateChoiceSelection(restrictedChoice,{},electiveCourses).empty());
+    assert(!validateChoiceSelection(restrictedChoice,{"EL1001","EL1001"},electiveCourses).empty());
+    Course misleadingArea;
+    misleadingArea.area="Area 10";
+    assert(!courseMatchesArea(misleadingArea,{1}));
+    misleadingArea.area="Area 2";
+    assert(courseMatchesArea(misleadingArea,{2}));
+    Course earthTopic;
+    earthTopic.tags={"earth science"};
+    assert(candidateScore(earthTopic,{{"music/art"}})==candidateScore(earthTopic,{}));
+    earthTopic.tags={"arts"};
+    assert(candidateScore(earthTopic,{{"music/art"}})==candidateScore(earthTopic,{})-100);
+
+    // Picker output must preserve original requirement indexes after visiting
+    // small groups first; downstream workload review uses those indexes.
+    DegreeRequirements pickerReq;
+    ChoiceGroup larger;
+    larger.choose=1;
+    larger.candidates={"EL1001","EL1002"};
+    larger.purpose="Larger requirement";
+    ChoiceGroup smaller;
+    smaller.choose=1;
+    smaller.candidates={"EL1003"};
+    smaller.purpose="Smaller requirement";
+    pickerReq.choice_groups={larger,smaller};
+    auto pickerCourses=electiveCourses;
+    pickerCourses["EL1003"]=pickerCourses.at("EL1001");
+    pickerCourses["EL1003"].code="EL1003";
+    std::unordered_map<std::string,Course> pickerChosen;
+    std::istringstream pickerInput("1\n999\n1,1\n1,\n1\n");
+    std::ostringstream pickerOutput;
+    oldInput=std::cin.rdbuf(pickerInput.rdbuf());
+    oldOutput=std::cout.rdbuf(pickerOutput.rdbuf());
+    const auto picked=selectElectives(pickerReq,pickerCourses,pickerChosen,
+        {larger.candidates,smaller.candidates},{true,true},{},false);
+    std::cin.rdbuf(oldInput);
+    std::cout.rdbuf(oldOutput);
+    assert(picked.selections[0].course_codes==std::vector<std::string>{"EL1001"});
+    assert(picked.selections[1].course_codes==std::vector<std::string>{"EL1003"});
+    assert(picked.ranked_groups[0]==larger.candidates);
+    assert(pickerOutput.str().find("not shown above")!=std::string::npos);
+    assert(pickerOutput.str().find("only once")!=std::string::npos);
+    assert(pickerOutput.str().find("distinct, valid")!=std::string::npos);
+    assert(pickerOutput.str().find("Assessment: Unknown / unconfirmed")!=std::string::npos);
+
+    // A user who initially skips pagination can still request M at selection.
+    DegreeRequirements pagedReq;
+    ChoiceGroup pagedGroup;
+    pagedGroup.choose=1;
+    std::unordered_map<std::string,Course> pagedCourses;
+    for (int i=0;i<21;++i) {
+        Course c;
+        c.code="ZZ"+std::to_string(1000+i);
+        c.credits_known=true;
+        c.prereq_status=i<20?PrereqStatus::SATISFIED:PrereqStatus::UNKNOWN;
+        c.prerequisite_source="STATIC";
+        c.prerequisites={"ZZ9999"};
+        pagedGroup.candidates.push_back(c.code);
+        pagedCourses[c.code]=c;
+    }
+    pagedReq.choice_groups={pagedGroup};
+    // ZZ9999 is an unselected alternative, not a guaranteed planned course.
+    pagedReq.choice_groups.push_back(ChoiceGroup{});
+    pagedReq.choice_groups.back().candidates={"ZZ9999"};
+    std::istringstream pagedInput("\n21\nM\nM\n21\n");
+    std::ostringstream pagedOutput;
+    pickerChosen.clear();
+    oldInput=std::cin.rdbuf(pagedInput.rdbuf());
+    oldOutput=std::cout.rdbuf(pagedOutput.rdbuf());
+    const auto paged=selectElectives(pagedReq,pagedCourses,pickerChosen,
+        {pagedGroup.candidates,{"ZZ9999"}},{true,false},{},false);
+    std::cin.rdbuf(oldInput);
+    std::cout.rdbuf(oldOutput);
+    assert(paged.selections[0].course_codes==std::vector<std::string>{"ZZ1020"});
+    assert(pagedOutput.str().find("All candidates are already shown")!=std::string::npos);
+    assert(pagedOutput.str().find("ZZ9999 ⚠️ not listed")!=std::string::npos);
+    assert(pagedOutput.str().find("Offering unconfirmed")!=std::string::npos);
+    assert(pagedCourses.at("ZZ1020").semesters.empty());
+
+    // Preferences accept lowercase, remove duplicates, reject conflicting none,
+    // and permit returning to the previous question.
+    std::istringstream preferenceInput("\nA,B\na,a\np\n");
+    std::ostringstream preferenceOutput;
+    oldInput=std::cin.rdbuf(preferenceInput.rdbuf());
+    oldOutput=std::cout.rdbuf(preferenceOutput.rdbuf());
+    const auto checkedAnswer=readMultiSelect("Preference",{"topic","none / all fine"},false);
+    const auto previousAnswer=readMultiSelect("Assessment",{"presentation","none / all fine"},true);
+    std::cin.rdbuf(oldInput);
+    std::cout.rdbuf(oldOutput);
+    assert(checkedAnswer.selections==std::vector<std::string>{"topic"});
+    assert(previousAnswer.previous);
+    assert(preferenceOutput.str().find("cannot be combined")!=std::string::npos);
+
     std::cout<<"All tests passed\n";
     return 0;
 }
