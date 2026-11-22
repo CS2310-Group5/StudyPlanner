@@ -147,3 +147,37 @@ The local database reader also accepts the prior browser script's format (`title
 ```json
 {"course":"CS3402","url":"https://example.invalid/correct-course-page","timestamp":"2026-11-21T14:05:22+08:00"}
 ```
+## Excel Export
+
+The generated Excel workbook provides a structured and readable study plan based on the planning results.
+
+### Features
+
+- Organizes courses by academic year and semester.
+- Supports courses spanning multiple semesters.
+- Calculates semester credits, yearly credits, total scheduled credits, and degree credits separately.
+- Highlights missing prerequisite requirements.
+- Provides separate worksheets for manual course placement, elective selections, and additional notes.
+- Improves readability through consistent formatting, adjustable row heights, and warning highlights.
+- Supports clickable course links and print-friendly layouts.
+
+The existing JSON interface is preserved to maintain compatibility with the C++ planning system.
+
+## Excel Regression Testing
+
+Run the following command from the project root:
+
+```bash
+python3 tests/test_excel_export.py
+```
+
+The tests verify:
+
+1. Cross-semester course placement and credit calculations.
+2. Prerequisite remarks and warning formatting.
+3. Manual course placement and workbook layout.
+
+These tests use simulated course data and do not require an internet connection or Degree Works authentication.
+
+## Excel Export
+## Excel Regression Testing
