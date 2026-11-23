@@ -72,6 +72,9 @@ if(BUILD_TESTING)
   add_test(NAME cityu_auth_helper
       COMMAND "${STUDYPLAN_TEST_PYTHON}"
               "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_auth_helper.py")
+  add_test(NAME cityu_excel_export
+      COMMAND "${STUDYPLAN_TEST_PYTHON}"
+              "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_excel_export.py")
   add_test(NAME cityu_demo_excel
       COMMAND "${STUDYPLAN_TEST_PYTHON}"
               "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_demo_excel.py"

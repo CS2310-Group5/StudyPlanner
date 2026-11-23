@@ -65,6 +65,13 @@ When the catalogue says `Not offered`, uses `X`, or has no offering terms, plann
 
 The output workbook is generated independently of the SPARK template. Academic years are separated vertically; Semester A, Semester B, and Summer remain horizontal. Each semester uses separate Course Code, Course Name, Credits, and Remarks columns, with clearly outlined year and semester blocks including their headers. Every course has its own row, semester and year credit totals are shown, and Summer is reserved for manual entry. Courses that cannot be planned automatically are retained on the Manual Placement sheet. A warning banner and concise per-course remarks identify assumptions or prerequisite conflicts; known missing prerequisites are named, while courses already studied, in progress, or planned do not receive a missing-prerequisite warning. The workbook contains no subject dropdowns or programme-specific graduation rules. A notes sheet reminds students to verify requirements and prerequisites. C/Q also remove a legacy downloaded SPARK template if one remains from an earlier version.
 
+If a saved plan from an older scheduler contains automatic Summer placements,
+the exporter retains each affected course in full on Manual Placement and adds
+an explicit warning instead of failing. A course split across a regular term
+and Summer is moved in full so its credits are not counted twice. New automatic
+plans use only Semester A/B; when no regular semester remains after a scheduled
+prerequisite, the dependent course also requires manual placement.
+
 ## Authentication helper contract
 
 `auth_helper.py` is invoked by C++ to read Degree Works:
