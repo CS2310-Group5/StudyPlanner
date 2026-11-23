@@ -1,0 +1,56 @@
+{
+  "CS3402": {
+    "title": "Database Systems",
+    "credits": 3,
+    "area": "",
+    "semesters": ["A", "B"],
+    "prerequisites": "CS2311 or equivalent",
+    "has_exam": true,
+    "has_group_work": true
+  },
+  "LC0200A": {
+    "title": "English for Academic Purposes",
+    "credits": 3,
+    "area": "",
+    "semesters": ["A", "B", "S"],
+    "prerequisites": "",
+    "has_exam": false,
+    "has_group_work": false
+  },
+  "CS5000": {
+    "title": "Incomplete assessment record",
+    "credits": 3,
+    "semesters": ["B"],
+    "prerequisites": "None",
+    "exam_percent": 40,
+    "ca_percent": null,
+    "assessment_unknown": false
+  },
+  "CS5001": {
+    "title": "Continuous assessment only",
+    "credits": 3,
+    "semesters": ["A"],
+    "prerequisites": [],
+    "exam_percent": null,
+    "ca_percent": 100,
+    "assessment_unknown": false
+  },
+  "CS5002": {
+    "title": "Split assessment",
+    "credits": 3,
+    "semesters": ["A"],
+    "prerequisites": [],
+    "exam_percent": 30,
+    "other_percent": 70,
+    "assessment_unknown": false
+  },
+  "CS5003": {
+    "title": "Unverified split",
+    "credits": 3,
+    "semesters": ["A"],
+    "prerequisites": [],
+    "exam_percent": 40,
+    "other_percent": 60,
+    "assessment_unknown": true
+  }
+}

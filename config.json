@@ -1,0 +1,10 @@
+{
+  "min_request_interval_ms": 60000,
+  "jitter_ms": 30000,
+  "max_retries": 3,
+  "cache_ttl_hours": 720,
+  "block_cooldown_hours": 24,
+  "elective_top_limit": 20,
+  "default_max_credits": 24,
+  "advanced_standing_max_credits": 21
+}

@@ -1,85 +1,164 @@
+import argparse
 import asyncio
 import os
-import json
-from playwright.async_api import async_playwright
+import re
+from urllib.parse import urlparse
+import subprocess
+import sys
 
-STATE_FILE = "session_state.json"
-DB_FILE = "courses_db.json"
+parser = argparse.ArgumentParser(description="CityU Degree Works authentication helper")
+parser.add_argument("--state", default="session_state.json")
+parser.add_argument("--page-text", default="page_text.txt")
+parser.add_argument("--courses-db", default="courses_db.json")
+parser.add_argument("--check", action="store_true", help="verify Playwright driver and Chromium")
 
-async def main():
-    print("====================================")
-    print("  CityU 資料獲取助手 (Python)  ")
-    print("====================================")
 
-    # 確保有一個空的資料庫檔案，避免 C++ 讀取失敗
-    if not os.path.exists(DB_FILE):
-        with open(DB_FILE, "w", encoding="utf-8") as f:
-            json.dump({}, f)
-        print(f"✅ 已建立空白資料庫 {DB_FILE}")
+def playwright_error(exc):
+    print("AUTH-PLAYWRIGHT-1: Playwright could not start its Node driver or Chromium is not installed.")
+    print("Suggested action: create a project .venv and install Playwright and its matching browser:")
+    if os.name == "nt":
+        print("  py -m venv .venv")
+        print(r"  .venv\Scripts\python.exe -m pip install --upgrade playwright openpyxl")
+        print(r"  .venv\Scripts\python.exe -m playwright install chromium")
+    else:
+        print("  python3 -m venv .venv")
+        print("  .venv/bin/python -m pip install --upgrade playwright openpyxl")
+        print("  .venv/bin/python -m playwright install chromium")
+    print("Python interpreter:", sys.executable)
+    print("Technical detail:", exc)
 
-    async with async_playwright() as p:
-        print("啟動瀏覽器...")
-        browser = await p.chromium.launch(headless=False)
-        
-        # 載入之前的登入狀態
-        if os.path.exists(STATE_FILE):
-            print("✅ 載入歷史登入狀態。")
-            context = await browser.new_context(storage_state=STATE_FILE, accept_downloads=True)
+
+def check_playwright():
+    try:
+        result = subprocess.run(
+            [sys.executable, "-m", "playwright", "--version"],
+            capture_output=True,
+            text=True,
+            timeout=60,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        playwright_error(exc)
+        return 21
+    if result.returncode:
+        detail = result.stderr.strip() or result.stdout.strip()
+        playwright_error(RuntimeError(detail or f"Playwright check exited with {result.returncode}"))
+        return 21
+    try:
+        from playwright.async_api import async_playwright
+    except Exception as exc:
+        playwright_error(exc)
+        return 21
+    print("Playwright Node driver is ready.")
+    print("If Chromium is not installed yet, run:")
+    print(f"  {sys.executable} -m playwright install chromium")
+    return 0
+
+
+def is_worksheet(url, text):
+    """Reject sign-in/loading pages; this checks readiness, not degree validity."""
+    parsed = urlparse(url)
+    if parsed.hostname != "degreeaudit.cityu.edu.hk":
+        return False
+    path = parsed.path.rstrip("/")
+    if path != "/dashboard/worksheets" and not path.startswith("/dashboard/worksheets/"):
+        return False
+    has_courses = re.search(r"\b[A-Z]{2,5}\s*\d{4}[A-Z]?\b", text)
+    has_audit_section = re.search(
+        r"still\s+needed|in[- ]progress|credits?\s+applied|student\s+id|audit\s+date",
+        text, re.IGNORECASE,
+    )
+    return bool(has_courses and has_audit_section)
+
+
+async def read_worksheet(page):
+    while True:
+        answer = input(
+            "Complete login and MFA, then open your Degree Works worksheet. "
+            "When it has fully loaded, press Enter (Q to cancel)..."
+        ).strip().upper()
+        if answer == "Q":
+            return None
+        text = await page.locator("body").inner_text()
+        if is_worksheet(page.url, text):
+            return text
+        print("Worksheet data is not ready. The login/loading page has not been saved.")
+        print("Open the worksheet with course codes and audit details, then try again.")
+
+
+async def main(args=None):
+    if args is None:
+        args = parser.parse_args()
+    print("CityU Authentication Helper")
+    if args.check:
+        return check_playwright()
+
+    try:
+        from playwright.async_api import async_playwright
+    except Exception as exc:
+        playwright_error(exc)
+        return 21
+
+    if not os.path.exists(args.courses_db):
+        with open(args.courses_db, "w", encoding="utf-8") as f:
+            f.write("{}")
+
+    try:
+        playwright = await async_playwright().start()
+    except Exception as exc:
+        playwright_error(exc)
+        return 21
+
+    try:
+        browser = await playwright.chromium.launch(headless=False)
+    except Exception as exc:
+        print("AUTH-BROWSER-1: Could not launch Chromium.")
+        print("Suggested action: install the browser with the command shown by `auth_helper.py --check`.")
+        print("Technical detail:", exc)
+        await playwright.stop()
+        return 21
+
+    try:
+        if os.path.exists(args.state):
+            print("Loaded the saved local browser session.")
+            try:
+                context = await browser.new_context(storage_state=args.state, accept_downloads=True)
+            except Exception:
+                print("The saved session could not be loaded. Please sign in again.")
+                context = await browser.new_context(accept_downloads=True)
         else:
-            print("⚠️ 找不到登入狀態，請準備手動登入。")
+            print("No saved session found. Complete login and MFA in the browser.")
             context = await browser.new_context(accept_downloads=True)
 
         page = await context.new_page()
-
-        # === 1. 抓 Degree Works ===
-        print("\n[1/2] 前往 Degree Works...")
-        await page.goto("https://degreeaudit.cityu.edu.hk:9040/dashboard/worksheets")
-        await page.wait_for_timeout(3000)
-        
-        # 檢查是否被踢回登入頁
-        if "login" in page.url.lower() or "auth.cityu" in page.url.lower():
-            print("🔒 需要手動登入 Degree Works...")
-            input(">>> 請在彈出的瀏覽器中完成登入 (包含 MFA)，看到成績單後按 Enter...")
-            # 登入成功後，儲存狀態
-            await context.storage_state(path=STATE_FILE)
-            print("✅ 登入狀態已儲存。")
-        
-        # 抓取文字並存檔
-        text = await page.evaluate("document.body.innerText")
-        with open("page_text.txt", "w", encoding="utf-8") as f:
-            f.write(text)
-        print("✅ Degree Works 資料已儲存為 page_text.txt。")
-
-        # === 2. 下載 SPARK Excel ===
-        print("\n[2/2] 前往 SPARK 下載模板...")
-        # 直接前往 submission 頁面
-        await page.goto("https://csapp.cs.cityu.edu.hk/spark/student/submission")
-        await page.wait_for_timeout(3000)
-        
-        # 如果 SPARK 要求重新登入（通常不用，因為 SSO 已通）
-        if "login" in page.url.lower():
-            print("🔒 SPARK 需要登入...")
-            # 如果停在引導頁，模擬點擊 Login 按鈕
-            try:
-                await page.click("text=Login")
-                await page.wait_for_timeout(3000)
-            except:
-                pass
-        
         try:
-            print("正在尋找下載按鈕...")
-            async with page.expect_download() as download_info:
-                # 尋找包含 'Download' 的按鈕或連結
-                await page.click("text=Download")
-            download = await download_info.value
-            await download.save_as("spark_template.xlsx")
-            print("✅ SPARK Excel 下載成功，儲存為 spark_template.xlsx。")
-        except Exception as e:
-            print(f"❌ SPARK 下載失敗: {e}")
-            print("⚠️ 請手動下載 Excel，並重新命名為 spark_template.xlsx")
+            await page.goto("https://degreeaudit.cityu.edu.hk:9040/dashboard/worksheets")
+            text = await read_worksheet(page)
+            if text is None:
+                print("Authentication cancelled; no worksheet was saved.")
+                return 130
+            # Save sessions even when no recognizable login redirect occurred.
+            await context.storage_state(path=args.state)
+            with open(args.page_text, "w", encoding="utf-8") as f:
+                f.write(text)
+        except EOFError:
+            print("Input closed; no worksheet was saved.")
+            return 130
+        except Exception as exc:
+            print("AUTH-SESSION-1: Degree Works session failed. Suggested action: sign in again or update the browser session.")
+            print("Technical detail:", exc)
+            return 21
 
+        print("Degree Works data was saved.")
+    finally:
         await browser.close()
-        print("\n🎉 所有前置資料獲取完畢！請執行 C++ 程式進行排課。")
+        await playwright.stop()
+    return 0
+
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        raise SystemExit(asyncio.run(main()) or 0)
+    except KeyboardInterrupt:
+        print("Authentication cancelled.")
+        raise SystemExit(130)
