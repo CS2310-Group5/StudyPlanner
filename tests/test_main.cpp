@@ -756,6 +756,47 @@ int main(){
     assert(summerPlan.courses[0].year_semester=="Summer (manual placement)");
     assert(summerPlan.courses[0].first_term_credits==3);
 
+    // Summer offerings must not enter automatic schedules or workload targets.
+    DegreeRequirements mixedSummerReq;
+    mixedSummerReq.remaining_years=2;
+    mixedSummerReq.required_courses={"MIX1001","MIX1002","MIX1003"};
+    std::unordered_map<std::string,Course> mixedSummerCourses;
+    for(const auto&code:mixedSummerReq.required_courses){
+        Course c;
+        c.code=code;c.credits=3;c.credits_known=true;
+        c.semesters={"Semester A","Semester B","Summer"};
+        c.prerequisite_source="STATIC";
+        mixedSummerCourses[code]=c;
+    }
+    const auto mixedSummerPlan=makePlan(mixedSummerReq,mixedSummerCourses,{},scheduleConfig,false);
+    assert(mixedSummerPlan.courses.size()==3);
+    assert(mixedSummerPlan.average_credits_per_term==3); // 9 credits / 3 remaining A/B terms
+    for(const auto&c:mixedSummerPlan.courses){
+        assert(!c.manual_placement);
+        assert(c.year_semester.find("Summer")==std::string::npos);
+    }
+    mixedSummerCourses["MIX1003"].title="Final Year Project";
+    const auto summerProjectPlan=makePlan(mixedSummerReq,mixedSummerCourses,{},scheduleConfig,false);
+    for(const auto&c:summerProjectPlan.courses)
+        assert(c.year_semester.find("Summer")==std::string::npos);
+
+    DegreeRequirements endOfPlanReq;
+    endOfPlanReq.remaining_years=1;
+    endOfPlanReq.required_courses={"END1001","END1002"};
+    Course lastPrerequisite;
+    lastPrerequisite.code="END1001";lastPrerequisite.credits=3;
+    lastPrerequisite.credits_known=true;lastPrerequisite.semesters={"Semester B"};
+    lastPrerequisite.prerequisite_source="STATIC";
+    Course endDependent=lastPrerequisite;
+    endDependent.code="END1002";endDependent.prerequisites={"END1001"};
+    const std::unordered_map<std::string,Course> endCourses={
+        {"END1001",lastPrerequisite},{"END1002",endDependent}};
+    const auto endPlan=makePlan(endOfPlanReq,endCourses,{},scheduleConfig,false);
+    assert(endPlan.courses.size()==2);
+    assert(!endPlan.courses[0].manual_placement);
+    assert(endPlan.courses[1].manual_placement);
+    assert(endPlan.courses[1].first_term_credits==3);
+
     DegreeRequirements placementReq;
     placementReq.remaining_years=3;
     placementReq.current_semester="Semester B";

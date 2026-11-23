@@ -52,5 +52,50 @@ class WorkbookTests(unittest.TestCase):
         self.assertEqual(self.sheet.page_setup.fitToWidth, 1)
         self.assertEqual(len(self.book.sheetnames), 4)
 
+    def test_legacy_summer_courses_are_preserved_for_manual_placement(self):
+        root = Path(self.temp.name)
+        source = root / "summer-plan.json"
+        output = root / "summer-plan.xlsx"
+        source.write_text(json.dumps({"plan_years": 2, "courses": [
+            {"code": "REG1001", "title": "Regular", "credits": 3,
+             "place": "Year 1 Semester B", "term_credits": 3},
+            {"code": "SUM1001", "title": "Summer placement", "credits": 3,
+             "place": "Year 2 Summer", "term_credits": 3},
+            {"code": "SPL1001", "title": "Split course", "credits": 6,
+             "place": "Year 2 Semester B", "term_credits": 3,
+             "second_place": "Year 2 Summer", "second_term_credits": 3}
+        ]}))
+        subprocess.run([sys.executable, str(WRITER), "--plan", str(source),
+                        "--output", str(output)], check=True)
+        book = load_workbook(output, data_only=True)
+        try:
+            schedule = list(book["Study Schedule"].values)
+            metadata = {row[0]: row[1] for row in schedule if row[0]}
+            self.assertEqual(metadata["Total scheduled credits"], 3)
+            for code in ("SUM1001", "SPL1001"):
+                self.assertFalse(any(code in row for row in schedule))
+            manual = list(book["Manual Placement"].values)
+            self.assertEqual([(row[0], row[2]) for row in manual[1:]],
+                             [("SUM1001", 3), ("SPL1001", 6)])
+            self.assertTrue(all("automatic placement included Summer" in row[3]
+                                for row in manual[1:]))
+            notes = " ".join(str(value) for row in book["Notes"].values for value in row)
+            self.assertIn("automatic placement included Summer", notes)
+            self.assertEqual(sum(row.count("REG1001") for row in schedule), 1)
+        finally:
+            book.close()
+
+    def test_invalid_semester_still_fails(self):
+        root = Path(self.temp.name)
+        source = root / "invalid-plan.json"
+        source.write_text(json.dumps({"plan_years": 1, "courses": [
+            {"code": "BAD1001", "credits": 3, "place": "Year 8 Semester A", "term_credits": 3}
+        ]}))
+        result = subprocess.run([sys.executable, str(WRITER), "--plan", str(source),
+                                 "--output", str(root / "invalid.xlsx")],
+                                capture_output=True, text=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("invalid semester", result.stderr)
+
 if __name__ == '__main__':
     unittest.main()
