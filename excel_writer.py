@@ -43,19 +43,21 @@ for course in plan["courses"]:
     place = course["place"].split(" (", 1)[0]
     if place not in valid_terms:
         raise ValueError(f"Course {course['code']} has an invalid semester: {place}")
-    courses_by_term[place].append(course)
-    credits_by_term[place] += int(course.get("term_credits", 0))
+    placements = [(place, int(course.get("term_credits", 0)))]
+    if course.get("second_place"):
+        placements.append((course["second_place"].split(" (", 1)[0],
+                           int(course.get("second_term_credits", 0))))
+    for term, credits in placements:
+        if term not in valid_terms or term.endswith("Summer"):
+            raise ValueError(f"Course {course['code']} has an invalid scheduled term: {term}")
+        entry = dict(course, term_credits=credits)
+        courses_by_term[term].append(entry)
+        credits_by_term[term] += credits
 
-planned_course_credits = sum(
-    int(course.get("term_credits", 0))
-    for course in plan["courses"]
-    if not course.get("manual_placement", False)
-)
+planned_course_credits = sum(credits_by_term.values())
 degree_course_credits = sum(
-    int(course.get("term_credits", 0))
-    for course in plan["courses"]
-    if not course.get("manual_placement", False)
-    and course.get("counts_toward_degree", True)
+    entry["term_credits"] for entries in courses_by_term.values() for entry in entries
+    if entry.get("counts_toward_degree", True)
 )
 
 workbook = Workbook()
@@ -152,6 +154,10 @@ def short_remarks(course):
     if course.get("requirement") == "In progress":
         return ""
     requirement = course.get("requirement", "")
+    if course.get("second_place"):
+        duration_note = "Year-long course; complete both terms"
+    else:
+        duration_note = ""
     if "Elective" in requirement:
         remarks = ["Elective"]
     elif "major" in requirement.lower():
@@ -160,6 +166,8 @@ def short_remarks(course):
         remarks = ["Required"]
     else:
         remarks = []
+    if duration_note:
+        remarks.append(duration_note)
     if not course.get("credits_known", True):
         remarks.append("⚠️ 3 credits assumed")
     missing_prerequisites = [
@@ -261,9 +269,14 @@ for year in range(1, plan_years + 1):
                     right=border_side if offset == 3 else soft_border_side,
                     bottom=border_side,
                 )
-                if "Prerequisite " in str(value):
+                if offset == 3 and "⚠️" in str(value):
+                    cell.fill = PatternFill("solid", fgColor=warning_fill)
+                    cell.font = Font(color="7F6000")
+                elif "Prerequisite " in str(value):
                     cell.font = Font(color="808080")
-        sheet.row_dimensions[cursor].height = 28
+        sheet.row_dimensions[cursor].height = max(28, min(150, 15 * max(
+            (sum(max(1, (len(line) + width - 1) // width) for line in str(sheet.cell(cursor, col).value or "").split("\n"))
+             for col, width in enumerate((13, 25, 10, 22) * 3, 1)), default=1)))
         cursor += 1
 
     total_row = cursor
@@ -302,7 +315,7 @@ for year in range(1, plan_years + 1):
 sheet.freeze_panes = f"A{year_start_row + 3}"
 sheet.sheet_properties.pageSetUpPr.fitToPage = True
 sheet.page_setup.orientation = "landscape"
-sheet.page_setup.fitToWidth = 0
+sheet.page_setup.fitToWidth = 1
 sheet.page_setup.fitToHeight = 0
 sheet.page_margins = PageMargins(left=0.25, right=0.25, top=0.5, bottom=0.5)
 sheet.print_title_rows = "1:1"
@@ -316,6 +329,7 @@ sheet.print_area = f"A1:{last_letter}{cursor - 1}"
 
 manual = workbook.create_sheet("Manual Placement")
 manual.sheet_view.showGridLines = False
+manual.freeze_panes = "A2"
 manual.append(["Course Code", "Course Name", "Credits", "Remarks"])
 for cell in manual[1]:
     cell.font = Font(bold=True, color=white)
@@ -408,6 +422,11 @@ if selection_row == 3:
 for column, width in enumerate([20, 32, 20, 48, 18, 72, 48], start=1):
     electives.column_dimensions[get_column_letter(column)].width = width
 electives.freeze_panes = "A3"
+for row in range(3, selection_row):
+    url_cell = electives.cell(row, 6)
+    if isinstance(url_cell.value, str) and url_cell.value.startswith("https://www.cityu.edu.hk/"):
+        url_cell.hyperlink = url_cell.value
+        url_cell.style = "Hyperlink"
 electives.auto_filter.ref = f"A2:G{max(2, selection_row - 1)}"
 for row_cells in electives.iter_rows(min_row=3):
     for cell in row_cells:
