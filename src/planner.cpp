@@ -374,7 +374,7 @@ Plan makePlan(const DegreeRequirements &req,
         if(summerOnly)continue;
         for(size_t term=static_cast<size_t>(plan.start_term_index);
             term<terms.size();++term)
-            if(hasOfferingInTerm(*course,terms[term]))
+            if(term%3!=2&&hasOfferingInTerm(*course,terms[term]))
                 availableTerms[term]=true;
     }
     for(const auto&code:req.in_progress)
@@ -444,7 +444,8 @@ Plan makePlan(const DegreeRequirements &req,
                                         " do not add up to its full course credit.");
 
         const auto offeredIn=[&](size_t term){
-            return inProgress||hasOfferingInTerm(course,terms[term]);
+            // Summer remains a manual-planning column, even if offered.
+            return term%3!=2&&(inProgress||hasOfferingInTerm(course,terms[term]));
         };
         const bool hasNonSummerOffering=course.semesters.empty()||
             std::any_of(course.semesters.begin(),course.semesters.end(),
@@ -540,9 +541,11 @@ Plan makePlan(const DegreeRequirements &req,
                         break;
                     }
             if(assigned==terms.size()){
-                assigned=std::min(earliest,terms.size()-1);
-                plan.warnings.push_back("No confirmed offering term is available for "+code+
-                    "; it is placed in the earliest remaining term for review.");
+                for(size_t term=earliest;term<terms.size();++term)
+                    if(term%3!=2){assigned=term;break;}
+                if(assigned!=terms.size())
+                    plan.warnings.push_back("No confirmed offering term is available for "+code+
+                        "; it is placed in the earliest remaining regular semester for review.");
             }
         }
         PlanCourse item;
@@ -566,6 +569,18 @@ Plan makePlan(const DegreeRequirements &req,
         else item.requirement="Prerequisite";
         item.counts_toward_degree=!nonDegree.count(code);
         item.first_term_credits=firstTermCredits;
+        if(assigned==terms.size()){
+            item.year_semester="Manual placement (no remaining regular semester)";
+            item.manual_placement=true;
+            item.warning=true;
+            item.warnings.push_back("No regular semester remains after the scheduled prerequisites; arrange this course manually.");
+            if(!course.credits_known)
+                item.warnings.push_back("Credit units are missing; 3 credits are assumed.");
+            manualPlacementCodes.insert(code);
+            courseWarnings=true;
+            plan.courses.push_back(std::move(item));
+            continue;
+        }
         item.warning=course.prereq_status==PrereqStatus::UNSCHEDULED||
                      course.prereq_status==PrereqStatus::UNKNOWN;
         if(item.warning)item.warnings.push_back("Prerequisites require review.");

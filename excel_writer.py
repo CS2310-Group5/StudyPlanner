@@ -47,9 +47,20 @@ for course in plan["courses"]:
     if course.get("second_place"):
         placements.append((course["second_place"].split(" (", 1)[0],
                            int(course.get("second_term_credits", 0))))
+    # Validate every part before adding any credits, including year-long courses.
     for term, credits in placements:
-        if term not in valid_terms or term.endswith("Summer"):
+        if term not in valid_terms:
             raise ValueError(f"Course {course['code']} has an invalid scheduled term: {term}")
+    if any(term.endswith("Summer") for term, _ in placements):
+        recovery_note = (
+            f"{course['code']}: automatic placement included Summer; "
+            "the entire course is retained for manual placement."
+        )
+        manual_courses.append(dict(course, manual_placement=True,
+            warnings=[*course.get("warnings", []), recovery_note]))
+        plan.setdefault("warnings", []).append(recovery_note)
+        continue
+    for term, credits in placements:
         entry = dict(course, term_credits=credits)
         courses_by_term[term].append(entry)
         credits_by_term[term] += credits
