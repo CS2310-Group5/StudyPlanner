@@ -158,6 +158,7 @@ def run_area_choice(executable, data_root, area_data_path):
             ("Enter 1 to start planning or 2 to scan course updates", "1"),
             ("Entry type:", "1"),
             ("Current semester:", "1"),
+            ("Type OK to begin these lookups", "N"),
         ):
             if marker in all_output and marker not in sent_prompts:
                 send(answer)
@@ -1497,7 +1498,7 @@ def main():
     blocked_directory, _ = user_data_directory(blocked_root)
     prepare_user_data(
         blocked_directory,
-        degree_metadata + "Still Needed:\n3 credits in GE2103\n",
+        degree_metadata + "Still Needed:\n3 credits in GE9999\n",
     )
     cache_directory = blocked_directory / ".cityu_cache"
     cache_directory.mkdir(parents=True, exist_ok=True)
@@ -1510,7 +1511,7 @@ def main():
             f"Incomplete elective data should be retained in the workbook:\n"
             f"{blocked.stdout}\n{blocked.stderr}"
         )
-    if "GE2103" not in blocked.stdout:
+    if "GE9999" not in blocked.stdout:
         raise AssertionError(f"Missing course fields were not identified:\n{blocked.stdout}")
     if "Catalogue cooldown remains" not in blocked.stdout:
         raise AssertionError(f"Cooldown was not connected to the missing data:\n{blocked.stdout}")
