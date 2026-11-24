@@ -1,82 +1,244 @@
 # CityU Automated Study Plan Generator
 
-A C++17 command-line application that builds a customizable Excel study plan from Degree Works information and shared CityU course-catalogue data.
-
-The application reads Degree Works audit information, retrieves or imports catalogue records, lets users select elective courses, schedules courses across academic terms, and generates a structured Excel workbook for review.
-
-## Course and Team Members
-
-**Course:** CS2310  
-**Group:** 5
-
-| No. | Name | Responsibilities |
-| --- | --- | --- |
-| 1 | CHIU Wai Yan | Development of the Excel export module using Python and `openpyxl`, including conversion of the generated plan into a structured, readable workbook. |
-| 3 | LEE Hei Tung | Degree Works and course scanner testing, feature validation, troubleshooting, and workflow verification. |
-| 4 | WONG Cheuk Ying | |
-| 5 | WONG Lai Lam | Initial implementation of the study planner, including the C++ program skeleton, Degree Works course retrieval, elective selection workflow, Excel output integration, and course-website scraping support. |
+This project is a C++17 command-line tool that builds a customizable Excel study plan from Degree Works requirements and shared course-catalogue data.
 
 ## Table of Contents
 
-1. [Overview](#overview)
+1. [Motivation](#motivation)
 2. [Features](#features)
-3. [Requirements](#requirements)
-4. [Build](#build)
-5. [Run](#run)
-6. [Command-Line Options](#command-line-options)
-7. [Course Database](#course-database)
-8. [Degree Works Authentication](#degree-works-authentication)
-9. [Elective Selection and Scheduling](#elective-selection-and-scheduling)
-10. [Excel Workbook](#excel-workbook)
-11. [Privacy and Data Storage](#privacy-and-data-storage)
-12. [Commands and Interactive Controls](#commands-and-interactive-controls)
-13. [Error Codes and Logs](#error-codes-and-logs)
-14. [Database Schema](#database-schema)
-15. [Overrides](#overrides)
-16. [Testing](#testing)
-17. [Limitations](#limitations)
+3. [Quick Start](#build)
+4. [Running the Program](#run)
+5. [Project and Team Structure](#project-and-team-structure)
+6. [Authentication](#authentication-helper-contract)
+7. [Privacy and Data Storage](#privacy-and-deletion)
+8. [Testing](#testing)
+9. [Limitations](#limitations)
+10. [Troubleshooting](#troubleshooting)
+11. [Database and Scoring](#courses_dbjson-schema)
 
-## Overview
+## Motivation
 
-The study-plan generator combines:
+Degree Works and CityU course catalogues contain the information needed to plan a degree, but they are not arranged as an editable semester-by-semester timetable. StudyPlanner separates the workflow into four understandable stages:
 
-- Student and programme information from a Degree Works audit.
-- Completed, in-progress, and required courses.
-- Elective requirements and area requirements.
-- Information from a local course catalogue database.
-- Optional updates obtained from official CityU course pages.
-- Scheduling and elective-ranking rules.
-- An Excel export generated through a Python `openpyxl` module.
+1. read Degree Works requirements and in-progress courses;
+2. combine them with locally cached CityU course information;
+3. let the student select and validate required choices and electives; and
+4. produce a readable, warning-aware Excel plan.
 
-The application does not confirm the correctness of a Degree Works audit or replace academic advising. It produces a planning aid that should be checked against official records and individual programme requirements.
+The project is intended as an advising aid, not a replacement for Degree Works, an academic adviser, or registration systems.
 
 ## Features
 
-- Reads saved Degree Works audit text and extracts course codes and audit metadata.
-- Supports manual SAML/Okta login through a visible Playwright browser.
-- Imports copied CityU catalogue text.
-- Fetches and caches course-page information.
-- Stores successful course updates locally.
-- Handles missing course details without silently inventing verification data.
-- Groups multiple elective requirements and area requirements.
-- Ranks electives according to prerequisite readiness and optional user preferences.
-- Places in-progress courses in their reported semesters.
-- Spreads required courses across Semester A and Semester B.
-- Keeps Summer terms available for manual planning.
-- Retains courses that cannot be scheduled safely on a Manual Placement worksheet.
-- Exports the completed plan as an Excel workbook.
-- Provides clickable course links and per-course warning remarks.
+- Parses Degree Works student, programme, major, college, cohort, graduation, and audit metadata.
+- Recognizes completed, in-progress, required, choice-based, area-based, and alternative requirements.
+- Separates mutually exclusive choices and prevents mixed selections from incompatible Degree Works alternatives.
+- Maintains a personal course database while providing a shared bundled catalogue.
+- Refreshes only course codes present in the student's audit when the course-update scan is requested.
+- Ranks electives primarily by prerequisite readiness, then by topic and assessment preferences.
+- Splits teaching areas into clear Area 1, Area 2, and Area 3 sections.
+- Excludes in-progress credits from remaining-credit workload targets.
+- Balances remaining credits across future offered terms, while preserving the student's Degree Works horizon.
+- Produces a formatted workbook with year and semester borders, total credits, manual-placement entries, notes, links, and assumptions.
+- Provides offline/demo and synthetic-test workflows that do not require a real student account.
 
-## Requirements
+## Build
 
-- CMake 3.20 or newer
-- A C++17 compiler
-- libcurl
-- Python 3
-- `openpyxl`
-- Playwright and Chromium only for live Degree Works login or live catalogue browsing
-
-### Debian/Ubuntu
+Requirements: CMake 3.20+, a C++17 compiler, libcurl, Python 3, and `openpyxl` for the Excel-export smoke test. Playwright and Chromium are only needed for live Degree Works login.
 
 ```bash
-sudo apt install cmake g++ libcurl4-openssl-dev python3 python3-pip python3-venv libnspr4 libnss3
+sudo apt install cmake g++ libcurl4-openssl-dev  # Debian/Ubuntu
+python3 -m venv .venv
+.venv/bin/python -m pip install --upgrade playwright openpyxl
+.venv/bin/python -m playwright install chromium
+sh scripts/build-and-test.sh
+./build/cityu_study_plan
+```
+
+macOS: install CMake, a C++ compiler, and libcurl with Homebrew. Create `.venv` with `python3 -m venv .venv`, then install Playwright and `openpyxl` and Chromium using the commands above before running the build script. Windows: install Visual Studio C++ Build Tools, CMake, and vcpkg; set `VCPKG_ROOT`, then run `.\scripts\build-and-test.ps1`. For login and Excel export, create `.venv` with `py -m venv .venv`, then run `.venv\Scripts\python.exe -m pip install --upgrade playwright openpyxl` and `.venv\Scripts\python.exe -m playwright install chromium`. The vcpkg manifest installs libcurl. The application automatically prefers the project `.venv` when present, avoiding mismatches between system Python packages and Playwright's Node driver.
+
+To check the Python/Playwright setup independently, run `.venv/bin/python auth_helper.py --check` on macOS/Linux or `.venv\Scripts\python.exe auth_helper.py --check` on Windows. The check verifies that Playwright's matching Node driver starts; install Chromium with the command it prints before logging in.
+
+At runtime, the executable reads `config.json`, `courses_db.json`, `auth_helper.py`, and `excel_writer.py` beside the executable (or in the project folder above it), but writes only to the current user's application-data directory. This works when launched from any working directory and does not require the project or executable folder to be writable. The app-data directory is `%LOCALAPPDATA%\CityUStudyPlan` on Windows, `~/Library/Application Support/CityUStudyPlan` on macOS, and `$XDG_DATA_HOME/cityu-study-plan` (or `~/.local/share/cityu-study-plan`) on Linux. Share or copy the complete project folder, not just the executable.
+
+## Run
+
+```bash
+./build/cityu_study_plan
+./build/cityu_study_plan --mode 1
+./build/cityu_study_plan --mode 2
+./build/cityu_study_plan --dry-run
+./build/cityu_study_plan --doctor
+./build/cityu_study_plan --demo
+./build/cityu_study_plan --demo --dry-run
+./build/cityu_study_plan --database CityuCources.txt --import-only
+./build/cityu_study_plan --database CityuCources.txt
+./build/cityu_study_plan --database --fetch-only
+```
+
+- `--mode 1`: start planning, preferring local course data.
+- `--mode 2`: scan and refresh only course codes present in the Degree Works audit, then prompt to continue planning.
+- `--dry-run`: print the computed plan without writing Excel.
+- `--refresh` / `--no-cache`: ignore page cache.
+- `--doctor`: check required files and Python support.
+- `--demo`: create an offline workbook from real course records in the bundled `courses_db.json`. It selects one course only as a catalogue example; it does not invent required courses or claim to represent a student's degree plan. It skips student files, login, and network access; the workbook is written to the `Study Plans` folder inside the per-user application-data directory, and the full path is printed on success.
+- `--demo --dry-run`: print the example plan without writing Excel.
+- `--database [file]`: import a pasted CityU catalogue text file, then optionally fill missing course pages.
+- `--import-only`: use with `--database` to import without any network requests.
+- `--fetch-only`: use with `--database` to fetch missing entries in the existing `courses_db.json` without importing a source file.
+
+The startup menu offers **Start planning!** or **Scan for course updates**. The update scan first reads the saved Degree Works audit (and requests login if needed), then refreshes only unique course codes found in that audit, including its completed, in-progress, required, and listed choice candidates. It does not scan the whole catalogue, choose electives, or create a workbook during the scan step. Before making requests it reports an approximate duration and asks permission; requests are paced at least 60 seconds apart plus up to 30 seconds of jitter. The light-hearted “Maybe take a nap first?” note is only an estimate—the wait depends on catalogue response times. Press Ctrl+C to stop; each successful course update is saved as it completes to a separate `courses_db_scanned.json` in the user's application-data directory. The old `courses_db.json` remains unchanged by the scan. On completion, type `1` at the continuation prompt to proceed to planning in the same run.
+
+During planning, course details in `courses_db_scanned.json` take precedence. Missing fields are filled from the older `courses_db.json`; only if the combined local records remain incomplete does the app offer an online lookup after showing its estimate and asking permission. Planning-time fetches are saved to the scanned database when it exists, otherwise to the regular personal database. If only offering terms are missing, planning uses the Semester A/B assumption without requiring a lookup. Pages are cached for 30 days, and all further requests stop for the run on a 403/429 or challenge page; a 24-hour cooldown prevents immediate retries. A scan that hits a cooldown reports that no requests were started; individual failures and save errors are reported and logged, while successful updates remain saved. The app does not attempt to bypass access controls, and no automated strategy can guarantee that a site will not block access. When lookup is unavailable or cancelled, the app continues with local information and writes a provisional workbook with unresolved items and warnings instead of silently treating missing data as verified.
+
+The database builder accepts copied catalogue text containing the course index and page text. It saves the index and detailed course records to `courses_db.json`; course pages marked “Indicative only” remain flagged unconfirmed. For remaining codes, it shows the request count and time estimate before asking permission, sends at most one request at a time with the same 60–90 second pacing, disables retries, and stops on a block/challenge. Completed records are saved as the run progresses. The default source filename is `CityuCources.txt`; pass another path after `--database` if needed.
+
+The Degree Works parser reads student/programme metadata, expected graduation and audit dates, explicit in-progress course rows, course titles, credit units, and semester terms. It derives the planning horizon and current semester when those fields are present; it asks only for missing scheduling information. Completed requirements are not scheduled again, and an in-progress course is placed in its reported term.
+
+The terminal UI uses color only when attached to a terminal and `NO_COLOR` is not set. Prompts preserve typed URL casing, validate numeric answers, confirm destructive cleanup, and explain available commands. `M` prints the next page of up to 20 electives. `P` returns to the previous preference question where supported. `CLEAN` removes cached pages but preserves an active catalogue cooldown. Each elective section states the matching Degree Works choice and asks only for the courses needed to fill it. Missing credit values default to 3 and are marked as assumed; incomplete course records remain selectable with an official information URL.
+
+The elective picker shows up to 20 candidates per page, including prerequisite status and the official course URL, with extra spacing between course details. Area requirements are grouped into Area 1/2/3 sections; candidate numbers follow the displayed order, and selections resolve against those exact rows. A selection must use distinct courses and meet the exact credit total; area requirements also enforce their listed-area and minimum-per-area rules. Degree Works completed and in-progress courses are matched to prerequisites; required non-elective and elective courses are considered planned, and only prerequisites absent from the degree audit are flagged. Prerequisite readiness is the primary ranking criterion, followed by topic and assessment preferences. Plans use the Degree Works horizon. In-progress courses are placed in their reported terms, required courses are spread across available Semester A/B terms to balance credits, and Project courses remain in the final year. Summer boxes are intentionally left for manual planning; Internship and Summer-only courses appear on a separate Manual Placement sheet. The scheduler avoids repeating courses and keeps LC0200A and LC0200B in separate semesters. If a term exceeds the preferred workload target, the CLI identifies alternatives offered in another semester and lets the user revise electives. Successfully fetched catalogue details are merged into `courses_db.json`; incomplete local entries remain eligible for a cautious lookup.
+
+When the catalogue says `Not offered`, uses `X`, or has no offering terms, planning provisionally treats the course as available in Semester A and Semester B (never Summer) and adds a visible warning; the shared catalogue data is not changed to create this assumption. When an elective or requirement has incomplete details, the CLI says it is trying to get information for that specific course. If lookup is unavailable or cancelled, the course remains visible with an official information URL and unresolved details are not invented. Missing credit values default to 3 and are visibly marked as assumed.
+
+The output workbook is generated independently of the SPARK template. Academic years are separated vertically; Semester A, Semester B, and Summer remain horizontal. Each semester uses separate Course Code, Course Name, Credits, and Remarks columns, with clearly outlined year and semester blocks including their headers. Every course has its own row, semester and year credit totals are shown, and Summer is reserved for manual entry. Courses that cannot be planned automatically are retained on the Manual Placement sheet. A warning banner and concise per-course remarks identify assumptions or prerequisite conflicts; known missing prerequisites are named, while courses already studied, in progress, or planned do not receive a missing-prerequisite warning. The workbook contains no subject dropdowns or programme-specific graduation rules. A notes sheet reminds students to verify requirements and prerequisites. C/Q also remove a legacy downloaded SPARK template if one remains from an earlier version.
+
+## Project and Team Structure
+
+The source is divided so independent team members can work with small module boundaries:
+
+| Area | Owner responsibility | Primary files |
+|---|---|---|
+| A — Core application | CLI flow, orchestration, shared UI, and integration | `src/main.cpp`, `src/ui.*` |
+| B — Catalogue and database | Catalogue parsing, imports, network acquisition, and database completeness | `src/database_builder.*`, `src/page_parser.*`, `src/acquisition.*` |
+| C — Excel workbook | Study-plan JSON/export bridge and workbook presentation | `src/excel.*`, `excel_writer.py` |
+| D — Electives | Ranking, Degree Works choice validation, areas, and selection UI | `src/electives.*` |
+| E — Scanner and reliability | Audit-only refresh scanning, fallbacks, cooldowns, runtime paths, and reliability review | `src/course_update_scan.*`, `src/runtime_paths.*`, `auth_helper.py` |
+
+Shared contracts and models are in `src/models.*`, `src/planner.*`, `src/config.*`, and `src/json.*`. A contributor should avoid changing these public types without coordinating all affected modules. Detailed ownership rules and ready-to-use AI handoff prompts are in `docs/TEAM_GUIDE.md`.
+
+## Authentication helper contract
+
+`auth_helper.py` is invoked by C++ to read Degree Works:
+
+```bash
+python3 auth_helper.py --state session_state.json --page-text page_text.txt --courses-db courses_db.json
+```
+
+Exit codes:
+
+| Code | Meaning |
+|---|---|
+| 0 | Helper completed |
+| 21 | Degree Works/session failure |
+| 130 | User cancelled |
+
+The helper opens a visible browser for SAML/Okta manual login and MFA. C++ never receives or stores passwords.
+
+## Commands
+
+Every prompt shows `OK/C/FIX/Q/P/M/CLEAN` as applicable. `OK` proceeds, `C` deletes `session_state.json` and `page_text.txt`, `Q` confirms and quits, `P` goes back, `M` loads more ranked courses, and `FIX` repairs a single course fetch. `CLEAN` is reserved for interactive cleanup of cache, logs, and overrides after confirmation.
+
+## Privacy and deletion
+
+Credentials/sessions are stored locally in `session_state.json`. Degree Works text is in `page_text.txt`. Passwords are never written by C++ or the helper. These files, the personal copy of `courses_db.json`, generated workbooks, temporary plan data, cache, logs, and URL overrides live under the per-user application-data directory. C and Q delete the sensitive session and Degree Works files there; cache, logs, and overrides remain unless separate cleanup is requested. Cache is under `.cityu_cache/`, logs under `.cityu_logs/`, and overrides are in `overrides.json`.
+
+## Error codes
+
+| Range | Plain-language class |
+|---|---|
+| `AUTH-*` | Login/session authentication |
+| `FETCH-*` | Catalogue network, 403/429, or challenge failure |
+| `PARSE-*` | Page or course fields could not be parsed |
+| `FIX-*` | User override saved |
+| `COMPUTE-*` | Scheduling failure |
+| `OUTPUT-*` | Excel/file failure |
+
+Logs are written at `.cityu_logs/errors.log` in the per-user application-data directory with a plain sentence, suggested action, and technical detail.
+
+## Testing
+
+Run the normal C++ and CLI test suite from the project root:
+
+```bash
+cmake -S . -B build
+cmake --build build --parallel
+ctest --test-dir build --output-on-failure
+```
+
+The `cityu_unit_tests` executable covers parsing and planner behavior. `cityu_interactive_flow` runs synthetic end-to-end CLI scenarios, including missing information and a different major. `cityu_demo_excel` verifies the offline demo path. The command scripts `scripts/build-and-test.sh` and `scripts/build-and-test.ps1` provide platform-specific build/test entry points.
+
+Tests use synthetic course codes and fictional audit data. They must not contain real student identifiers or require a live Degree Works account. Any workbook test that exercises `excel_writer.py` requires the Python `openpyxl` package.
+
+## Limitations
+
+- **A study plan is only an advising aid.** Degree Works remains the official record. The output does not guarantee graduation, prerequisite eligibility, course registration, seat availability, timetable compatibility, course equivalency, or programme approval.
+- **Degree Works extraction depends on page structure.** Parsing copied or extracted HTML/text can fail when Ellucian Degree Works changes labels, tables, links, dynamic sections, or rendered text. The parser preserves visible requirements where possible, but unusual formatting may be incomplete or need manual placement.
+- **The course catalogue can be incomplete or stale.** Local bundled data may lag CityU's current offerings, credits, assessment components, titles, prerequisites, or restrictions. The app marks unresolved fields rather than guessing, but users must confirm details on the official course catalogue.
+- **Update scanning is deliberately slow and network-dependent.** The audit-only scan sends paced requests, normally 60 seconds apart plus jitter, and may take approximately one minute or more per course. Large audits, network latency, repeated failures, or CityU access controls can make the process take substantially longer. Estimated duration is approximate, not a guarantee.
+- **Website structure and access controls can block acquisition.** Catalogue and login pages may change, require MFA or new browser sessions, return 403/429 responses, serve challenge pages, or temporarily reject automated access. The app stops on block conditions and does not bypass them.
+- **Offering information has deliberate fallback behavior.** Courses with missing terms or records marked `Not offered` are provisionally considered for Semester A and Semester B, never Summer. This makes the schedule usable but is not proof that registration will be available.
+- **Prerequisite parsing is conservative.** Conditional, alternative, waived, concurrent, departmental, or year-of-study prerequisites may not map perfectly to a simple course-code list. The result is based on the extracted course text and must be reviewed.
+- **Elective ranking is advisory, not exhaustive.** It prioritizes prerequisite readiness, then preferences, and does not model every individual restriction or wait-list policy. Area rules come from the parsed audit and may need verification for unusual programmes.
+- **The remaining-credit and workload balance is an estimate.** It excludes in-progress credits, but cannot account for personal workload limits, employment, course collisions, availability changes, minor/stream constraints, or programme-specific manual rules.
+- **The workbook export is a planning document.** It does not reserve places, perform official registration, create university calendar entries, or verify that all Degree Works credits add to the student's exact degree total.
+- **Browser automation may depend on a suitable environment.** Playwright, Chromium, the operating system, certificate settings, SAML/Okta redirects, VPN/network access, and MFA support can affect manual login. A saved session or page can also expire.
+- **Automated tests cannot prove all real audits.** Unit, demo, and synthetic CLI tests cover known behavior and edge cases, but do not verify every CityU programme, every Degree Works export layout, or a live catalogue response.
+- **Results depend on personal data and local state.** The app stores page text, browser session state, cache, databases, logs, overrides, and output under the user's application-data directory. Deleting or moving that directory can remove history and personal course updates.
+
+## Troubleshooting
+
+| Problem | Recommended action |
+|---|---|
+| No audit appears after login | Confirm that the fully loaded Degree Works worksheet is open, then press Enter. Reauthenticate if the session expired. |
+| Course information is missing | Run the audit-only course scan or permit the planning-time lookup. If no network access is available, review the official course URL and unresolved warnings. |
+| Requests stop or show a 403/429 message | Stop retrying; wait for the documented cooldown and verify the website manually in a browser. Do not change code to bypass access controls. |
+| An elective selection is rejected | Read the exact credit/count/area requirement, choose distinct in-range courses, and verify that selections do not mix mutually exclusive Degree Works alternatives. |
+| The workbook does not contain an expected course | Check Degree Works completion/in-progress status and the manual-placement sheet. A course may be incomplete, unoffered, or remain due to an unresolved prerequisite requirement. |
+| The executable cannot find Python or `openpyxl` | Run `--doctor`, activate the project virtual environment, and install Playwright, Chromium, and `openpyxl` as described in Build. |
+| Changes do not appear in an existing plan | Re-run planning after refreshing the database or selecting the required audit. Review `courses_db_scanned.json` for scan-only updates and the personal cache for old page data. |
+
+## Scoring
+
+Prerequisite readiness is the primary ranking factor (base scores: SATISFIED 4000, SCHEDULED 3000, UNKNOWN 2000, UNSCHEDULED 1000, on top of a shared 10000 baseline). A matching topic the user marked as not preferred subtracts 100; each matching assessment preference subtracts 10. Thus user preferences adjust order within readiness tiers rather than outweighing a prerequisite-readiness tier. Semester availability is used by scheduling and overload review, not as a preference score. No score floor is used; candidates are paged in groups of up to 20.
+
+## `courses_db.json` schema
+
+The top-level object maps course codes to course objects:
+
+```json
+{
+  "CS3402": {
+    "title": "Database Systems",
+    "credits": 3,
+    "semesters": ["Semester A", "Semester B"],
+    "prerequisites": ["CS2311"],
+    "prerequisites_text": "CS2311",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "engineering",
+    "tags": ["database", "systems"],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/CS3402.htm",
+    "exam_percent": null,
+    "other_percent": null,
+    "raw_items": [],
+    "raw_text": "",
+    "assessment_unknown": true
+  }
+}
+```
+
+`exam_percent` and `other_percent` are the stored assessment percentages. The second value is displayed to students as continuous assessment and combines quizzes, coursework, attendance, projects, and other non-exam components; `raw_items` can list the source components without scoring them as separate categories. Percentages are nullable integers from 0–100. `assessment_unknown=true` means the split is unconfirmed and no default is invented. Legacy `ca_percent` fields are read as `other_percent`. Prerequisites is a list of course codes or `[]`; unknown prerequisite information is represented by `["UNKNOWN"]` or an omitted list, but never guessed. `exclusive_courses` records courses that must not both count toward the same plan, and `catalogue_notes` preserves relevant course-specific constraints. Conflicting exclusive courses prevent workbook export until the plan is corrected.
+
+`prerequisites_text` preserves the source wording when prerequisites are conditional or use alternatives that the planner cannot safely model as a simple list. `catalogue_year` identifies the edition represented by an imported or fetched record.
+
+The bundled `courses_db.json` is the shared reference catalogue. On first run, it is copied to the user's application-data directory. On later runs, missing bundled entries and bundled detailed records refresh incomplete or older local records, while newer personal catalogue records and local-only courses are preserved. Catalogue imports and successful lookups update only the personal copy, never the project resources. The optional `courses_db_scanned.json` stores scan-specific results separately; it is loaded first for planning and the regular database fills only information absent from those results.
+
+The local database reader also accepts the prior browser script's format (`title`, `credits`, `area`, `semesters`, string `prerequisites`, `has_exam`, and `has_group_work`). Legacy exam booleans are not treated as assessment percentages, and blank or unparseable prerequisite text remains `UNKNOWN`. This supports importing an already-created local database without running a challenge-clearing browser scraper.
+
+## Overrides
+
+`overrides.json` is JSON Lines (`.jsonl` format), with one object per line:
+
+```json
+{"course":"CS3402","url":"https://example.invalid/correct-course-page","timestamp":"2026-11-21T14:05:22+08:00"}
+```
