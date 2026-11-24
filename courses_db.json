@@ -41373,7 +41373,6 @@
     "raw_text": "Continuous Assessment: 70%, Examination: 30% (Indicative only, please check the detailed course information GE2343.pdf).",
     "assessment_unknown": false
   },
-  {
   "CA1166": {
     "title": "Professionals and Society",
     "credits": 3,
@@ -41763,7 +41762,6 @@
     "raw_text": "Assessment (Indicative only, please check the detailed course information). Continuous Assessment: 50%, Examination: 50%, Examination Duration: 2 hours, Min. Continuous Assessment Passing Requirement: 30%, Min. Examination Passing Requirement: 30%.",
     "assessment_unknown": true
   },
-```json
   "CA2627": {
     "title": "Building Science",
     "credits": 3,
@@ -41782,7 +41780,6 @@
     "assessment_unknown": true
   },
 
-```json
   "CA2627": {
     "title": "Building Science",
     "credits": 3,
@@ -58398,7 +58395,7 @@
   },
 "COM2120": {
     "title": "Health Communication",
-    ÿ re 匱翴 ": 3,
+    "credits": 3,
     "semesters": ["Semester A 2026/27"],
     "prerequisites": ["UNKNOWN"],
     "prerequisites_text": "Exclusive Courses: GE2266 or GE1223",
@@ -58430,7 +58427,7 @@
     "raw_text": "Assessment (Indicative only, please check the detailed course information). Continuous Assessment: 100%.",
     "assessment_unknown": true
   },
-"COMÿ 02 匱翴 
+"COM2202": {
     "title": "Writing for the Media",
     "credits": 3,
     "semesters": ["Semester A 2026/27"],
@@ -67849,7 +67846,7 @@
     "raw_text": "Assessment (Indicative only, please check the detailed course information). Continuous Assessment: 60%, Examination: 40%, Examination Duration: 2 hours, Min. Continuous Assessment Passing Requirement: 30%, Min. Examination Passing Requirement: 30%.",
     "assessment_unknown": true
   },
-"SEEÿ 03 匱翴 
+"SEE2203": {
     "title": "Environmental, Safety, and Occupational Health Management",
     "credits": 3,
     "semesters": ["Semester A 2026/27"],
