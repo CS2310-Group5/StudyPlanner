@@ -1147,6 +1147,39 @@ int main(){
     assert(previousAnswer.previous);
     assert(preferenceOutput.str().find("cannot be combined")!=std::string::npos);
 
+       
+    {
+        DegreeRequirements audit;
+        audit.in_progress = {"cs2310", "CS2310"};          // duplicate + different case
+        audit.completed_courses = {"CS3402"};
+        audit.required_courses = {"  LC0200A  "};           // spaces
+        audit.major_courses = {"NOT-A-COURSE", "AB123"};    // invalid codes
+        audit.non_degree_courses = {"GE1401"};
+        ChoiceGroup g;
+        g.candidates = {"CS2311", "CS2310", "XX9999Y"};     // another duplicate
+        audit.choice_groups = {g};
+
+        const auto codes = degreeWorksCourseCodes(audit);
+
+        // Must be unique, upper-case, sorted, only valid course-code pattern
+        assert(codes.size() == 5);
+        assert(codes[0] == "CS2310");
+        assert(codes[1] == "CS2311");
+        assert(codes[2] == "CS3402");
+        assert(codes[3] == "GE1401");
+        assert(codes[4] == "LC0200A");
+        // invalid codes must be filtered out
+        assert(std::find(codes.begin(), codes.end(), "NOT-A-COURSE") == codes.end());
+        assert(std::find(codes.begin(), codes.end(), "AB123") == codes.end());
+        assert(std::find(codes.begin(), codes.end(), "XX9999Y") == codes.end());
+    }
+
+
+    {
+        DegreeRequirements empty;
+        const auto codes = degreeWorksCourseCodes(empty);
+        assert(codes.empty());
+    }
     std::cout<<"All tests passed\n";
     return 0;
 }
