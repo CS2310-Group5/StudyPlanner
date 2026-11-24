@@ -10,7 +10,7 @@ This project is a C++17 command-line tool that builds a customizable Excel study
 | No. | Name | Responsibilities |
 | --- | --- | --- |
 | 1 | CHIU Wai Yan |   |
-| 2 | CHOW Tsz Tung |   |
+| 2 | CHOW Tsz Tung | Responsible for elective preference and selection logic (Part D), including ranking, input validation, regression tests, and documentation. Also fixed Degree Works login/session handling and Summer scheduling/Excel export errors. |
 | 3 | LEE Hei Tung | Responsible for Degree Works and Course Scanner testing, including testing, feature validation, troubleshooting, and workflow verification.  |
 | 4 | WONG Cheuk Ying |   |
 | 5 | WONG Lai Lam | Implement the initial working version of the study planner: a program skeleton that retrieves required courses from the degree works, lets user select electives, and exports the result to Excel, together with the course-website scraping script. |
