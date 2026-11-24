@@ -15,7 +15,7 @@ Names are listed in **SURNAME Given Name** format.
 | 2 | CHOW Tsz Tung |   |
 | 3 | LEE Hei Tung |   |
 | 4 | WONG Cheuk Ying |   |
-| 5 | WONG Lai Lam | implement the initial working version of the study planner: a program skeleton that retrieves required courses from the degree works, lets user select electives, and exports the result to Excel, together with the course-website scraping script. |
+| 5 | WONG Lai Lam | Implement the initial working version of the study planner: a program skeleton that retrieves required courses from the degree works, lets user select electives, and exports the result to Excel, together with the course-website scraping script. |
 
 
 ## Build
