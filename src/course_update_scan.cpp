@@ -132,11 +132,12 @@ printInfo(std::to_string(scanCount) +
                     durationText(retryMax) +
                     " with configured retries. Maybe take a nap first? The catalogue requests are deliberately unhurried.");
                 printInfo("Press Ctrl+C at any time to stop. Each successful course update is saved as it completes.");
-                const std::string consent =
-                    readPrompt("Type OK to scan these Degree Works courses");
-                if (upperText(consent) != "OK") {
-                    printWarning("Course update scan cancelled; no scan requests were started.");
-                } else {
+               const std::string consent =
+            readPrompt("Type OK (or YES) to scan these Degree Works courses");
+            const std::string answer = upperText(consent);
+            if (answer != "OK" && answer != "YES" && answer != "Y") {
+                printWarning("Course update scan cancelled; no scan requests were started.");
+            } else {
                     std::size_t updated = 0;
                     std::size_t failed = 0;
                     std::size_t saveFailures = 0;
