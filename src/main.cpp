@@ -560,9 +560,9 @@ int main(int argc,char**argv){
                      <<pathError.message()<<"\n";
             return 2;
         }
-        while(readPrompt("Type 1 to continue to study planning")!="1")
-            printWarning("Enter 1 to continue. Press Ctrl+C to stop the program.");
-    }
+        printInfo("Scan finished. Planning has not started yet.");
+while(readPrompt("Type 1 to continue to study planning")!="1")
+    printWarning("Enter 1 to continue to planning. Press Ctrl+C to stop the program.");
     Acquisition acq(config,mode);
     if(!demo){
         std::string acquisitionDatabaseError;
