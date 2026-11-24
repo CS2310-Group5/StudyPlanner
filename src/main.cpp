@@ -273,12 +273,14 @@ int main(int argc,char**argv){
     std::string databasePath="CityuCources.txt";
     AcquisitionMode mode=AcquisitionMode::STATIC_FIRST;
     bool modeSpecified=false;
+    bool chooseMode=false;
     for(int i=1;i<argc;++i){
         std::string a=argv[i];
         if(a=="--doctor")doctor=true;
         else if(a=="--dry-run")dry=true;
         else if(a=="--refresh"||a=="--no-cache")refresh=true;
         else if(a=="--demo")demo=true;
+        else if(a=="--choose-mode")chooseMode=true;
         else if(a=="--database"){
             databaseMode=true;
             if(i+1<argc&&std::string(argv[i+1]).rfind("--",0)!=0){
@@ -295,10 +297,11 @@ int main(int argc,char**argv){
             mode=AcquisitionMode::STATIC_FIRST;
             modeSpecified=true;
         }
-        else if(a=="--help"){std::cout<<"Usage: cityu_study_plan [--mode 1|2] [--dry-run] [--refresh] [--doctor] [--demo]\n"
+        else if(a=="--help"){std::cout<<"Usage: cityu_study_plan [--mode 1|2] [--choose-mode] [--dry-run] [--refresh] [--doctor] [--demo]\n"
             "       cityu_study_plan --database [pasted-course-text.txt] [--import-only]\n"
             "       cityu_study_plan --database --fetch-only\n"
             "  --demo writes an offline workbook from bundled catalogue records; add --dry-run to print the plan only.\n"
+            "  Default startup scans course updates; --mode 1 skips scanning; --choose-mode shows the menu.\n"
             "  --mode 2 refreshes only course codes listed in Degree Works, then continues to planning.\n"
             "  --database imports course text and optionally fills missing entries with sequential official-catalogue requests.\n"
             "  --import-only skips all network access.\n"
@@ -401,14 +404,15 @@ int main(int argc,char**argv){
     showStartScreen();
     if(demo)    printInfo("Offline demo: catalogue example only, not a degree requirement; no student data is used.");
 
-    if(!demo){
+    if(!demo&&!modeSpecified&&!chooseMode)scanCourseUpdates=true;
+    if(!demo&&chooseMode&&!modeSpecified){
         printSection("Choose how course information is found");
         std::cout<<"  1) Start planning! — use local course data first and look up missing details when needed.\n";
         std::cout<<"  2) Scan for course updates — refresh catalogue details only for course codes listed in Degree Works, then return here.\n";
         printInfo("Scanning first reads your Degree Works course list; login may be required. It does not choose electives or create a workbook.");
         printInfo("Press Ctrl+C at any time to stop. Completed course updates are saved; you can run the scan again later.");
     }
-    if(!modeSpecified&&!demo){
+    if(!modeSpecified&&!demo&&chooseMode){
         while(true){
             const std::string selection=readPrompt("Enter 1 to start planning or 2 to scan course updates");
             const std::string value=selection.empty()?"":std::string(selection);
@@ -417,6 +421,8 @@ int main(int argc,char**argv){
             printWarning("Choose 1 to start planning or 2 to scan course updates.");
         }
     }
+    if(!demo&&scanCourseUpdates)
+        printInfo("Selected: Scan for course updates. You can decline network requests before planning.");
     if(!demo&&!scanCourseUpdates)
         printInfo("Selected: Start planning. Local course data is preferred.");
 
