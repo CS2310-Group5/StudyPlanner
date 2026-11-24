@@ -39789,5 +39789,1588 @@
     "raw_items": [],
     "raw_text": "",
     "assessment_unknown": true
+  },
+  "DSC0001": {
+    "title": "Internship",
+    "credits": 0,
+    "semesters": [
+      "Semester A 2026/27",
+      "Semester B 2026/27",
+      "Summer 2027"
+    ],
+    "prerequisites": [],
+    "prerequisites_text": "The internship should be programme-related. Prior approval should be sought from the programme leader.",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Internship",
+      "Data Science",
+      "Equivalent: SDSC0001"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC0001.htm",
+    "exam_percent": 0,
+    "other_percent": 100,
+    "raw_items": [
+      "Internship reflective report (500 words)",
+      "Evaluation report by the industrial supervisor"
+    ],
+    "raw_text": "Continuous Assessment: 100% (Indicative only; please check the detailed course information DSC0001.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC0002": {
+    "title": "Internship",
+    "credits": 0,
+    "semesters": [
+      "Semester A 2026/27",
+      "Semester B 2026/27",
+      "Summer 2027"
+    ],
+    "prerequisites": [],
+    "prerequisites_text": "The internship should be programme-related. Prior approval should be sought from the programme leader.",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Internship",
+      "Data Science",
+      "Equivalent: SDSC0002"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC0002.htm",
+    "exam_percent": 0,
+    "other_percent": 100,
+    "raw_items": [
+      "Internship reflective report (500 words)",
+      "Evaluation report by the industrial supervisor"
+    ],
+    "raw_text": "Continuous Assessment: 100% (Indicative only; please check the detailed course information DSC0002.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC0003": {
+    "title": "Internship",
+    "credits": 0,
+    "semesters": [
+      "Semester A 2026/27",
+      "Semester B 2026/27",
+      "Summer 2027"
+    ],
+    "prerequisites": [],
+    "prerequisites_text": "The internship should be programme-related. Prior approval should be sought from the programme leader.",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Internship",
+      "Data Science",
+      "Equivalent: SDSC0003"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC0003.htm",
+    "exam_percent": 0,
+    "other_percent": 100,
+    "raw_items": [
+      "Internship reflective report (500 words)",
+      "Evaluation report by the industrial supervisor"
+    ],
+    "raw_text": "Continuous Assessment: 100% (Indicative only; please check the detailed course information DSC0003.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC0004": {
+    "title": "Internship",
+    "credits": 0,
+    "semesters": [
+      "Semester A 2026/27",
+      "Semester B 2026/27",
+      "Summer 2027"
+    ],
+    "prerequisites": [],
+    "prerequisites_text": "The internship should be programme-related. Prior approval should be sought from the programme leader.",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Internship",
+      "Data Science",
+      "Equivalent: SDSC0004"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC0004.htm",
+    "exam_percent": 0,
+    "other_percent": 100,
+    "raw_items": [
+      "Internship reflective report (500 words)",
+      "Evaluation report by the industrial supervisor"
+    ],
+    "raw_text": "Continuous Assessment: 100% (Indicative only; please check the detailed course information DSC0004.pdf).",
+    "assessment_unknown": false
+  },
+"DSC1001": {
+    "title": "Introduction to Data Science",
+    "credits": 2,
+    "semesters": [
+      "Semester A 2026/27"
+    ],
+    "prerequisites": [],
+    "prerequisites_text": "",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC1001",
+      "Exclusive: GE1356"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC1001.htm",
+    "exam_percent": 20,
+    "other_percent": 80,
+    "raw_items": [
+      "Continuous Assessment: 80%",
+      "Examination: 20% (1 hour)"
+    ],
+    "raw_text": "Continuous Assessment: 80%, Examination: 20% (Indicative only, please check the detailed course information DSC1001.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC2001": {
+    "title": "Python for Data Science",
+    "credits": 4,
+    "semesters": [
+      "Semester A 2026/27"
+    ],
+    "prerequisites": [
+      "DSC1001",
+      "CS2311",
+      "CS2315",
+      "CS1315",
+      "CS2360"
+    ],
+    "prerequisites_text": "DSC1001* & (1. CS2311/CS2315 or 2. CS1315 or 3. CS2360). *Pre-requisite DSC1001 will be exempted for students who are enrolled in Minor in Data Science.",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC2001"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC2001.htm",
+    "exam_percent": 50,
+    "other_percent": 50,
+    "raw_items": [
+      "Continuous Assessment: 50%",
+      "Examination: 50% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 50%, Examination: 50% (Indicative only, please check the detailed course information DSC2001.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC2002": {
+    "title": "Convex Optimization",
+    "credits": 3,
+    "semesters": [
+      "Semester B 2026/27"
+    ],
+    "prerequisites": [
+      "MA1503",
+      "MA2503",
+      "MA2508"
+    ],
+    "prerequisites_text": "(MA1503 or MA2503) and MA2508",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC2002"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC2002.htm",
+    "exam_percent": 40,
+    "other_percent": 60,
+    "raw_items": [
+      "Continuous Assessment: 60%",
+      "Examination: 40% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 60%, Examination: 40% (Indicative only, please check the detailed course information DSC2002.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC2003": {
+    "title": "Human Contexts and Ethics in Data Science",
+    "credits": 3,
+    "semesters": [
+      "Semester B 2026/27"
+    ],
+    "prerequisites": [
+      "DSC1001"
+    ],
+    "prerequisites_text": "DSC1001* (*Pre-requisite DSC1001 will be exempted for students who are enrolled in Minor in Data Science)",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC2003"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC2003.htm",
+    "exam_percent": 15,
+    "other_percent": 85,
+    "raw_items": [
+      "Continuous Assessment: 85%",
+      "Examination: 15% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 85%, Examination: 15% (Indicative only, please check the detailed course information DSC2003.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC2004": {
+    "title": "Data Visualization",
+    "credits": 3,
+    "semesters": [
+      "Semester B 2026/27"
+    ],
+    "prerequisites": [],
+    "prerequisites_text": "",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC2004"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC2004.htm",
+    "exam_percent": 30,
+    "other_percent": 70,
+    "raw_items": [
+      "Continuous Assessment: 70%",
+      "Examination: 30% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 70%, Examination: 30% (Indicative only, please check the detailed course information DSC2004.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC2005": {
+    "title": "Introduction to Computational Social Science",
+    "credits": 3,
+    "semesters": [
+      "Semester B 2026/27"
+    ],
+    "prerequisites": [
+      "DSC1001",
+      "DSC2001"
+    ],
+    "prerequisites_text": "DSC1001* and DSC2001 (*Pre-requisite DSC1001 will be exempted for students who are enrolled in Minor in Data Science)",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC2005"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC2005.htm",
+    "exam_percent": 50,
+    "other_percent": 50,
+    "raw_items": [
+      "Continuous Assessment: 50%",
+      "Examination: 50% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 50%, Examination: 50% (Indicative only, please check the detailed course information DSC2005.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC2102": {
+    "title": "Statistical Methods and Data Analysis",
+    "credits": 3,
+    "semesters": [
+      "Semester B 2026/27"
+    ],
+    "prerequisites": [
+      "MA2506",
+      "MA2510"
+    ],
+    "prerequisites_text": "MA2506 or MA2510",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC2102"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC2102.htm",
+    "exam_percent": 60,
+    "other_percent": 40,
+    "raw_items": [
+      "Continuous Assessment: 40%",
+      "Examination: 60% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 40%, Examination: 60% (Indicative only, please check the detailed course information DSC2102.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3001": {
+    "title": "Big Data: The Arts and Science of Scaling",
+    "credits": 3,
+    "semesters": [
+      "Semester A 2026/27"
+    ],
+    "prerequisites": [
+      "CS3402"
+    ],
+    "prerequisites_text": "CS3402",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3001"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3001.htm",
+    "exam_percent": 30,
+    "other_percent": 70,
+    "raw_items": [
+      "Continuous Assessment: 70%",
+      "Examination: 30% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 70%, Examination: 30% (Indicative only, please check the detailed course information DSC3001.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3002": {
+    "title": "Data Mining",
+    "credits": 3,
+    "semesters": [
+      "Semester B 2026/27"
+    ],
+    "prerequisites": [
+      "MA2506",
+      "MA2510"
+    ],
+    "prerequisites_text": "MA2506 or MA2510",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3002"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3002.htm",
+    "exam_percent": 30,
+    "other_percent": 70,
+    "raw_items": [
+      "Continuous Assessment: 70%",
+      "Examination: 30% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 70%, Examination: 30% (Indicative only, please check the detailed course information DSC3002.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3003": {
+    "title": "Blockchain",
+    "credits": 3,
+    "semesters": [
+      "Semester B 2026/27"
+    ],
+    "prerequisites": [],
+    "prerequisites_text": "",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3003"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3003.htm",
+    "exam_percent": 60,
+    "other_percent": 40,
+    "raw_items": [
+      "Continuous Assessment: 40%",
+      "Examination: 60% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 40%, Examination: 60% (Indicative only, please check the detailed course information DSC3003.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3004": {
+    "title": "Computational Optimization",
+    "credits": 3,
+    "semesters": [],
+    "prerequisites": [
+      "SDSC2002",
+      "DSC2002"
+    ],
+    "prerequisites_text": "SDSC2002 or DSC2002",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3004",
+      "Not offering in current academic year"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3004.htm",
+    "exam_percent": 40,
+    "other_percent": 60,
+    "raw_items": [
+      "Continuous Assessment: 60%",
+      "Examination: 40% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 60%, Examination: 40% (Indicative only, please check the detailed course information DSC3004.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3005": {
+    "title": "Computational Statistics",
+    "credits": 3,
+    "semesters": [],
+    "prerequisites": [
+      "DSC3007"
+    ],
+    "prerequisites_text": "DSC3007",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3005",
+      "Not offering in current academic year"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3005.htm",
+    "exam_percent": 40,
+    "other_percent": 60,
+    "raw_items": [
+      "Continuous Assessment: 60%",
+      "Examination: 40% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 60%, Examination: 40% (Indicative only, please check the detailed course information DSC3005.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3006": {
+    "title": "Fundamentals of Machine Learning I",
+    "credits": 3,
+    "semesters": [
+      "Semester A 2026/27"
+    ],
+    "prerequisites": [
+      "MA1503",
+      "MA2503",
+      "MA2506",
+      "MA2510"
+    ],
+    "prerequisites_text": "(MA1503 or MA2503) and (MA2506 or MA2510)",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3006"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3006.htm",
+    "exam_percent": 50,
+    "other_percent": 50,
+    "raw_items": [
+      "Continuous Assessment: 50%",
+      "Examination: 50% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 50%, Examination: 50% (Indicative only, please check the detailed course information DSC3006.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3007": {
+    "title": "Advanced Statistics",
+    "credits": 3,
+    "semesters": [
+      "Semester A 2026/27"
+    ],
+    "prerequisites": [
+      "MS2602",
+      "DSC2102"
+    ],
+    "prerequisites_text": "MS2602 or DSC2102",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3007"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3007.htm",
+    "exam_percent": 50,
+    "other_percent": 50,
+    "raw_items": [
+      "Continuous Assessment: 50%",
+      "Examination: 50% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 50%, Examination: 50% (Indicative only, please check the detailed course information DSC3007.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3008": {
+    "title": "Systems Dynamics and Control",
+    "credits": 3,
+    "semesters": [
+      "Semester A 2026/27"
+    ],
+    "prerequisites": [
+      "MA2508",
+      "MA1503"
+    ],
+    "prerequisites_text": "MA2508 and MA1503",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3008"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3008.htm",
+    "exam_percent": 60,
+    "other_percent": 40,
+    "raw_items": [
+      "Continuous Assessment: 40%",
+      "Examination: 60% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 40%, Examination: 60% (Indicative only, please check the detailed course information DSC3008.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3009": {
+    "title": "Behavioural Analytics",
+    "credits": 3,
+    "semesters": [],
+    "prerequisites": [],
+    "prerequisites_text": "",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3009",
+      "Not offering in current academic year"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3009.htm",
+    "exam_percent": 50,
+    "other_percent": 50,
+    "raw_items": [
+      "Continuous Assessment: 50%",
+      "Examination: 50% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 50%, Examination: 50% (Indicative only, please check the detailed course information DSC3009.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3010": {
+    "title": "Digital Trace Analytics",
+    "credits": 3,
+    "semesters": [
+      "Semester B 2026/27"
+    ],
+    "prerequisites": [
+      "DSC1001",
+      "DSC2001"
+    ],
+    "prerequisites_text": "DSC1001* and DSC2001 (*Pre-requisite DSC1001 will be exempted for students who are enrolled in Minor in Data Science)",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3010"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3010.htm",
+    "exam_percent": 60,
+    "other_percent": 40,
+    "raw_items": [
+      "Continuous Assessment: 40%",
+      "Examination: 60% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 40%, Examination: 60% (Indicative only, please check the detailed course information DSC3010.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3011": {
+    "title": "Social Data Processing and Modelling",
+    "credits": 3,
+    "semesters": [],
+    "prerequisites": [
+      "DSC1001",
+      "DSC2001"
+    ],
+    "prerequisites_text": "DSC1001* and DSC2001 (*Pre-requisite DSC1001 will be exempted for students who are enrolled in Minor in Data Science)",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3011",
+      "Not offering in current academic year"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3011.htm",
+    "exam_percent": 50,
+    "other_percent": 50,
+    "raw_items": [
+      "Continuous Assessment: 50%",
+      "Examination: 50% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 50%, Examination: 50% (Indicative only, please check the detailed course information DSC3011.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3013": {
+    "title": "Introduction to Social Media Analytics",
+    "credits": 3,
+    "semesters": [
+      "Semester A 2026/27"
+    ],
+    "prerequisites": [
+      "DSC1001",
+      "DSC2001"
+    ],
+    "prerequisites_text": "DSC1001 and DSC2001",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3013"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3013.htm",
+    "exam_percent": 50,
+    "other_percent": 50,
+    "raw_items": [
+      "Continuous Assessment: 50%",
+      "Examination: 50% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 50%, Examination: 50% (Indicative only, please check the detailed course information DSC3013.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3014": {
+    "title": "Introduction to Sharing Economy",
+    "credits": 3,
+    "semesters": [
+      "Semester B 2026/27"
+    ],
+    "prerequisites": [],
+    "prerequisites_text": "",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3014"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3014.htm",
+    "exam_percent": 60,
+    "other_percent": 40,
+    "raw_items": [
+      "Continuous Assessment: 40%",
+      "Examination: 60% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 40%, Examination: 60% (Indicative only, please check the detailed course information DSC3014.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3015": {
+    "title": "Knowledge Graph and Cognitive Computing",
+    "credits": 3,
+    "semesters": [],
+    "prerequisites": [
+      "CS3402"
+    ],
+    "prerequisites_text": "CS3402",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3015",
+      "Not offering in current academic year"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3015.htm",
+    "exam_percent": 40,
+    "other_percent": 60,
+    "raw_items": [
+      "Continuous Assessment: 60%",
+      "Examination: 40% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 60%, Examination: 40% (Indicative only, please check the detailed course information DSC3015.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3016": {
+    "title": "Social Network Analysis",
+    "credits": 3,
+    "semesters": [
+      "Semester B 2026/27"
+    ],
+    "prerequisites": [
+      "SDSC1001",
+      "DSC1001",
+      "SDSC2001",
+      "DSC2001"
+    ],
+    "prerequisites_text": "(SDSC1001 or DSC1001)* and (SDSC2001 or DSC2001) (*Pre-requisite SDSC1001 or DSC1001 will be exempted for students who are enrolled in Minor in Data Science)",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3016"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3016.htm",
+    "exam_percent": 50,
+    "other_percent": 50,
+    "raw_items": [
+      "Continuous Assessment: 50%",
+      "Examination: 50% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 50%, Examination: 50% (Indicative only, please check the detailed course information DSC3016.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3017": {
+    "title": "Game Theory and Its Application",
+    "credits": 3,
+    "semesters": [],
+    "prerequisites": [
+      "MA1503",
+      "MA2503",
+      "MA2506",
+      "MA2510",
+      "MA2508"
+    ],
+    "prerequisites_text": "(MA1503 or MA2503) and (MA2506 or MA2510) and MA2508",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3017",
+      "Not offering in current academic year"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3017.htm",
+    "exam_percent": 40,
+    "other_percent": 60,
+    "raw_items": [
+      "Continuous Assessment: 60%",
+      "Examination: 40% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 60%, Examination: 40% (Indicative only, please check the detailed course information DSC3017.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3018": {
+    "title": "Introduction to Internet of Things",
+    "credits": 3,
+    "semesters": [
+      "Semester B 2026/27"
+    ],
+    "prerequisites": [],
+    "prerequisites_text": "",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3018"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3018.htm",
+    "exam_percent": 40,
+    "other_percent": 60,
+    "raw_items": [
+      "Continuous Assessment: 60%",
+      "Examination: 40% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 60%, Examination: 40% (Indicative only, please check the detailed course information DSC3018.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3019": {
+    "title": "Introduction to Networked Life and Data Science",
+    "credits": 3,
+    "semesters": [
+      "Semester A 2026/27"
+    ],
+    "prerequisites": [],
+    "prerequisites_text": "",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3019"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3019.htm",
+    "exam_percent": 30,
+    "other_percent": 70,
+    "raw_items": [
+      "Continuous Assessment: 70%",
+      "Examination: 30% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 70%, Examination: 30% (Indicative only, please check the detailed course information DSC3019.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3020": {
+    "title": "Engineering Economics",
+    "credits": 3,
+    "semesters": [
+      "Semester B 2026/27"
+    ],
+    "prerequisites": [
+      "MA1503"
+    ],
+    "prerequisites_text": "MA1503",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3020"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3020.htm",
+    "exam_percent": 40,
+    "other_percent": 60,
+    "raw_items": [
+      "Continuous Assessment: 60%",
+      "Examination: 40% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 60%, Examination: 40% (Indicative only, please check the detailed course information DSC3020.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3022": {
+    "title": "Financial Data Analytics for Investments",
+    "credits": 3,
+    "semesters": [
+      "Semester B 2026/27"
+    ],
+    "prerequisites": [
+      "MA1503",
+      "MA2506",
+      "MA2510"
+    ],
+    "prerequisites_text": "MA1503 and (MA2506 or MA2510)",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3022"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3022.htm",
+    "exam_percent": 40,
+    "other_percent": 60,
+    "raw_items": [
+      "Continuous Assessment: 60%",
+      "Examination: 40% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 60%, Examination: 40% (Indicative only, please check the detailed course information DSC3022.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3023": {
+    "title": "Data Science Applications in Portfolio Risk Analysis",
+    "credits": 3,
+    "semesters": [],
+    "prerequisites": [
+      "MA1503",
+      "MA2506",
+      "MA2510"
+    ],
+    "prerequisites_text": "MA1503 and (MA2506 or MA2510)",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3023",
+      "Not offering in current academic year"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3023.htm",
+    "exam_percent": 40,
+    "other_percent": 60,
+    "raw_items": [
+      "Continuous Assessment: 60%",
+      "Examination: 40% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 60%, Examination: 40% (Indicative only, please check the detailed course information DSC3023.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3025": {
+    "title": "Internship for Flagship Programme",
+    "credits": 3,
+    "semesters": [],
+    "prerequisites": [],
+    "prerequisites_text": "The internship should be programme-related. Prior approval should be sought from the programme leader.",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3025",
+      "Not offering in current academic year"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3025.htm",
+    "exam_percent": 0,
+    "other_percent": 100,
+    "raw_items": [
+      "Continuous Assessment: 100%"
+    ],
+    "raw_text": "Continuous Assessment: 100% (Indicative only, please check the detailed course information DSC3025.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3026": {
+    "title": "International Professional Development",
+    "credits": 3,
+    "semesters": [],
+    "prerequisites": [],
+    "prerequisites_text": "(1) This course is designed for students who have completed Year 3; (2) All job specifications and requirements must be submitted to Co-operative Education Centre (CEC) for prior approval; (3) Pre-attachment Training",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3026",
+      "Not offering in current academic year"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3026.htm",
+    "exam_percent": 0,
+    "other_percent": 100,
+    "raw_items": [
+      "Continuous Assessment: 100%"
+    ],
+    "raw_text": "Continuous Assessment: 100% (Indicative only, please check the detailed course information DSC3026.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3027": {
+    "title": "Smart Logistics and Transportation",
+    "credits": 3,
+    "semesters": [
+      "Semester A 2026/27"
+    ],
+    "prerequisites": [],
+    "prerequisites_text": "",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3027"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3027.htm",
+    "exam_percent": 40,
+    "other_percent": 60,
+    "raw_items": [
+      "Continuous Assessment: 60%",
+      "Examination: 40% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 60%, Examination: 40% (Indicative only, please check the detailed course information DSC3027.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3060": {
+    "title": "Operations Research",
+    "credits": 3,
+    "semesters": [
+      "Semester B 2026/27"
+    ],
+    "prerequisites": [],
+    "prerequisites_text": "Pre-cursor(s): MA1503 and MA1508 and MA2508",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3060",
+      "Pre-cursor: MA1503, MA1508, MA2508"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3060.htm",
+    "exam_percent": 40,
+    "other_percent": 60,
+    "raw_items": [
+      "Continuous Assessment: 60%",
+      "Examination: 40% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 60%, Examination: 40% (Indicative only, please check the detailed course information DSC3060.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3080": {
+    "title": "Internship",
+    "credits": 3,
+    "semesters": [
+      "Semester A 2026/27",
+      "Semester B 2026/27",
+      "Summer 2027"
+    ],
+    "prerequisites": [],
+    "prerequisites_text": "The internship should be programme-related. Prior approval should be sought from the programme leader.",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3080"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3080.htm",
+    "exam_percent": 0,
+    "other_percent": 100,
+    "raw_items": [
+      "Continuous Assessment: 100%"
+    ],
+    "raw_text": "Continuous Assessment: 100% (Indicative only, please check the detailed course information DSC3080.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3102": {
+    "title": "Quality Technologies",
+    "credits": 3,
+    "semesters": [],
+    "prerequisites": [
+      "MA2506",
+      "MA2510"
+    ],
+    "prerequisites_text": "MA2506 or MA2510",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: ADSE3102, SYE3102, SDSC3102",
+      "Not offering in current academic year"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3102.htm",
+    "exam_percent": 40,
+    "other_percent": 60,
+    "raw_items": [
+      "Continuous Assessment: 60%",
+      "Examination: 40% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 60%, Examination: 40% (Indicative only, please check the detailed course information DSC3102.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC3105": {
+    "title": "Bayesian Analysis",
+    "credits": 3,
+    "semesters": [
+      "Semester A 2026/27"
+    ],
+    "prerequisites": [
+      "MA2506",
+      "MA2510"
+    ],
+    "prerequisites_text": "MA2506 or MA2510",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC3105"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC3105.htm",
+    "exam_percent": 40,
+    "other_percent": 60,
+    "raw_items": [
+      "Continuous Assessment: 60%",
+      "Examination: 40% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 60%, Examination: 40% (Indicative only, please check the detailed course information DSC3105.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC4001": {
+    "title": "Foundation of Reinforcement Learning",
+    "credits": 3,
+    "semesters": [],
+    "prerequisites": [
+      "DSC2002",
+      "MA3515",
+      "MA2506",
+      "MA2510"
+    ],
+    "prerequisites_text": "(DSC2002 or MA3515) and (MA2506 or MA2510)",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC4001",
+      "Not offering in current academic year"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC4001.htm",
+    "exam_percent": 50,
+    "other_percent": 50,
+    "raw_items": [
+      "Continuous Assessment: 50%",
+      "Examination: 50% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 50%, Examination: 50% (Indicative only, please check the detailed course information DSC4001.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC4008": {
+    "title": "Deep Learning",
+    "credits": 3,
+    "semesters": [
+      "Semester A 2026/27"
+    ],
+    "prerequisites": [
+      "DSC3006"
+    ],
+    "prerequisites_text": "DSC3006",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC4008"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC4008.htm",
+    "exam_percent": 40,
+    "other_percent": 60,
+    "raw_items": [
+      "Continuous Assessment: 60%",
+      "Examination: 40% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 60%, Examination: 40% (Indicative only, please check the detailed course information DSC4008.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC4009": {
+    "title": "Data Intelligence in Action",
+    "credits": 3,
+    "semesters": [
+      "Semester B 2026/27"
+    ],
+    "prerequisites": [
+      "SDSC2001",
+      "DSC2001"
+    ],
+    "prerequisites_text": "SDSC2001 or DSC2001",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC4009"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC4009.htm",
+    "exam_percent": 0,
+    "other_percent": 100,
+    "raw_items": [
+      "Continuous Assessment: 100%"
+    ],
+    "raw_text": "Continuous Assessment: 100% (Indicative only, please check the detailed course information DSC4009.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC4010": {
+    "title": "Projects in Data Science (research)",
+    "credits": 3,
+    "semesters": [],
+    "prerequisites": [],
+    "prerequisites_text": "",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC4010",
+      "Not offering in current academic year"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC4010.htm",
+    "exam_percent": 0,
+    "other_percent": 100,
+    "raw_items": [
+      "Continuous Assessment: 100%"
+    ],
+    "raw_text": "Continuous Assessment: 100% (Indicative only, please check the detailed course information DSC4010.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC4011": {
+    "title": "Experimental Research for Social Media",
+    "credits": 3,
+    "semesters": [],
+    "prerequisites": [
+      "SDSC1001",
+      "DSC1001",
+      "SDSC2001",
+      "DSC2001"
+    ],
+    "prerequisites_text": "(SDSC1001 or DSC1001)* and (SDSC2001 or DSC2001) (*Pre-requisite SDSC1001/DSC1001 will be exempted for students who are enrolled in Minor in Data Science)",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC4011",
+      "Not offering in current academic year"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC4011.htm",
+    "exam_percent": 50,
+    "other_percent": 50,
+    "raw_items": [
+      "Continuous Assessment: 50%",
+      "Examination: 50% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 50%, Examination: 50% (Indicative only, please check the detailed course information DSC4011.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC4016": {
+    "title": "Fundamentals of Machine Learning II",
+    "credits": 3,
+    "semesters": [
+      "Semester B 2026/27"
+    ],
+    "prerequisites": [
+      "DSC3006"
+    ],
+    "prerequisites_text": "DSC3006",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC4016"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC4016.htm",
+    "exam_percent": 20,
+    "other_percent": 80,
+    "raw_items": [
+      "Continuous Assessment: 80%",
+      "Examination: 20%"
+    ],
+    "raw_text": "Continuous Assessment: 80%, Examination: 20% (Indicative only, please check the detailed course information DSC4016.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC4018": {
+    "title": "AI in Systematic Trading",
+    "credits": 3,
+    "semesters": [],
+    "prerequisites": [],
+    "prerequisites_text": "",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC4018",
+      "Not offering in current academic year"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC4018.htm",
+    "exam_percent": 60,
+    "other_percent": 40,
+    "raw_items": [
+      "Continuous Assessment: 40%",
+      "Examination: 60% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 40%, Examination: 60% (Indicative only, please check the detailed course information DSC4018.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC4019": {
+    "title": "Stochastic Processes and Applications",
+    "credits": 3,
+    "semesters": [],
+    "prerequisites": [
+      "MA2506",
+      "MA2510"
+    ],
+    "prerequisites_text": "MA2506 or MA2510",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: MA4546, SDSC4019",
+      "Not offering in current academic year"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC4019.htm",
+    "exam_percent": 60,
+    "other_percent": 40,
+    "raw_items": [
+      "Continuous Assessment: 40%",
+      "Examination: 60% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 40%, Examination: 60% (Indicative only, please check the detailed course information DSC4019.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC4021": {
+    "title": "Advanced Internet of Things",
+    "credits": 3,
+    "semesters": [],
+    "prerequisites": [
+      "DSC3018"
+    ],
+    "prerequisites_text": "DSC3018",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC4021",
+      "Not offering in current academic year"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC4021.htm",
+    "exam_percent": 50,
+    "other_percent": 50,
+    "raw_items": [
+      "Continuous Assessment: 50%",
+      "Examination: 50% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 50%, Examination: 50% (Indicative only, please check the detailed course information DSC4021.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC4024": {
+    "title": "Project Management and Analysis",
+    "credits": 3,
+    "semesters": [
+      "Semester A 2026/27"
+    ],
+    "prerequisites": [],
+    "prerequisites_text": "",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC4024"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC4024.htm",
+    "exam_percent": 50,
+    "other_percent": 50,
+    "raw_items": [
+      "Continuous Assessment: 50%",
+      "Examination: 50% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 50%, Examination: 50% (Indicative only, please check the detailed course information DSC4024.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC4026": {
+    "title": "Systems Modelling and Simulation",
+    "credits": 3,
+    "semesters": [
+      "Semester B 2026/27"
+    ],
+    "prerequisites": [
+      "MA2506",
+      "MA2510"
+    ],
+    "prerequisites_text": "MA2506 or MA2510",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC4026"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC4026.htm",
+    "exam_percent": 50,
+    "other_percent": 50,
+    "raw_items": [
+      "Continuous Assessment: 50%",
+      "Examination: 50% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 50%, Examination: 50% (Indicative only, please check the detailed course information DSC4026.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC4051": {
+    "title": "Facilities and Distribution Management",
+    "credits": 3,
+    "semesters": [
+      "Semester B 2026/27"
+    ],
+    "prerequisites": [
+      "MA2506",
+      "MA2510",
+      "DSC3027"
+    ],
+    "prerequisites_text": "(MA2506 or MA2510) and DSC3027",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC4051"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC4051.htm",
+    "exam_percent": 60,
+    "other_percent": 40,
+    "raw_items": [
+      "Continuous Assessment: 40%",
+      "Examination: 60% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 40%, Examination: 60% (Indicative only, please check the detailed course information DSC4051.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC4064": {
+    "title": "Reliability Engineering",
+    "credits": 3,
+    "semesters": [],
+    "prerequisites": [
+      "DSC3102"
+    ],
+    "prerequisites_text": "DSC3102",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC4064",
+      "Not offering in current academic year"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC4064.htm",
+    "exam_percent": 60,
+    "other_percent": 40,
+    "raw_items": [
+      "Continuous Assessment: 40%",
+      "Examination: 60% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 40%, Examination: 60% (Indicative only, please check the detailed course information DSC4064.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC4066": {
+    "title": "Professional Engineering Practice",
+    "credits": 3,
+    "semesters": [],
+    "prerequisites": [],
+    "prerequisites_text": "",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: MEEM4066, MBE4066, JC4066, SDSC4066",
+      "Not offering in current academic year"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC4066.htm",
+    "exam_percent": 0,
+    "other_percent": 100,
+    "raw_items": [
+      "Continuous Assessment: 100%"
+    ],
+    "raw_text": "Continuous Assessment: 100% (Indicative only, please check the detailed course information DSC4066.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC4070": {
+    "title": "Large Language Models",
+    "credits": 3,
+    "semesters": [
+      "Semester A 2026/27"
+    ],
+    "prerequisites": [
+      "SDSC3006",
+      "DSC3006"
+    ],
+    "prerequisites_text": "SDSC3006 or DSC3006",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC4070"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC4070.htm",
+    "exam_percent": 40,
+    "other_percent": 60,
+    "raw_items": [
+      "Continuous Assessment: 60%",
+      "Examination: 40% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 60%, Examination: 40% (Indicative only, please check the detailed course information DSC4070.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC4103": {
+    "title": "Decision Analytics and Risk Management",
+    "credits": 3,
+    "semesters": [
+      "Semester B 2026/27"
+    ],
+    "prerequisites": [
+      "MA1503",
+      "MA1508",
+      "MA2508"
+    ],
+    "prerequisites_text": "MA1503 and MA1508 and MA2508",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC4103"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC4103.htm",
+    "exam_percent": 60,
+    "other_percent": 40,
+    "raw_items": [
+      "Continuous Assessment: 40%",
+      "Examination: 60% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 40%, Examination: 60% (Indicative only, please check the detailed course information DSC4103.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC4107": {
+    "title": "Financial Engineering and Analytics",
+    "credits": 3,
+    "semesters": [
+      "Semester A 2026/27"
+    ],
+    "prerequisites": [
+      "MA2506",
+      "MA2510"
+    ],
+    "prerequisites_text": "MA2506 or MA2510",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC4107"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC4107.htm",
+    "exam_percent": 60,
+    "other_percent": 40,
+    "raw_items": [
+      "Continuous Assessment: 40%",
+      "Examination: 60% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 40%, Examination: 60% (Indicative only, please check the detailed course information DSC4107.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC4109": {
+    "title": "Smart Manufacturing and Automation",
+    "credits": 3,
+    "semesters": [],
+    "prerequisites": [],
+    "prerequisites_text": "Students must complete a minimum of 45 CUs to be eligible",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC4109",
+      "Not offering in current academic year"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC4109.htm",
+    "exam_percent": 40,
+    "other_percent": 60,
+    "raw_items": [
+      "Continuous Assessment: 60%",
+      "Examination: 40% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 60%, Examination: 40% (Indicative only, please check the detailed course information DSC4109.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC4110": {
+    "title": "Statistical Design and Analysis of Experiments",
+    "credits": 3,
+    "semesters": [],
+    "prerequisites": [
+      "MA2506",
+      "MA2510"
+    ],
+    "prerequisites_text": "MA2506 or MA2510",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC4110",
+      "Not offering in current academic year"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC4110.htm",
+    "exam_percent": 50,
+    "other_percent": 50,
+    "raw_items": [
+      "Continuous Assessment: 50%",
+      "Examination: 50% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 50%, Examination: 50% (Indicative only, please check the detailed course information DSC4110.pdf).",
+    "assessment_unknown": false
+  },
+  "DSC4116": {
+    "title": "Data Science Capstone",
+    "credits": 6,
+    "semesters": [
+      "Semester A 2026/27",
+      "Semester B 2026/27"
+    ],
+    "prerequisites": [],
+    "prerequisites_text": "",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Department of Data Science",
+    "tags": [
+      "Equivalent: SDSC4116",
+      "Two Semesters"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/DSC4116.htm",
+    "exam_percent": 0,
+    "other_percent": 100,
+    "raw_items": [
+      "Continuous Assessment: 100%"
+    ],
+    "raw_text": "Continuous Assessment: 100% (Indicative only, please check the detailed course information DSC4116.pdf).",
+    "assessment_unknown": false
+  },
+  "GE1356": {
+    "title": "Introduction to Data Science",
+    "credits": 3,
+    "semesters": [
+      "Semester A 2026/27"
+    ],
+    "prerequisites": [],
+    "prerequisites_text": "",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Area 3: Science and Technology",
+    "tags": [
+      "Department of Data Science",
+      "Exclusive: SDSC1001 or DSC1001"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/GE1356.htm",
+    "exam_percent": 20,
+    "other_percent": 80,
+    "raw_items": [
+      "Continuous Assessment: 80%",
+      "Examination: 20% (1 hour)"
+    ],
+    "raw_text": "Continuous Assessment: 80%, Examination: 20% (Indicative only, please check the detailed course information GE1356.pdf).",
+    "assessment_unknown": false
+  },
+  "GE2343": {
+    "title": "Data Visualization",
+    "credits": 3,
+    "semesters": [
+      "Semester B 2024/25",
+      "Semester B 2025/26 (Tentative)"
+    ],
+    "prerequisites": [],
+    "prerequisites_text": "",
+    "catalogue_year": "2026/27",
+    "catalogue_detail_available": true,
+    "area": "Area 3: Science and Technology",
+    "tags": [
+      "Department of Data Science",
+      "Equivalent: SDSC2004"
+    ],
+    "url": "https://www.cityu.edu.hk/catalogue/ug/current/course/GE2343.htm",
+    "exam_percent": 30,
+    "other_percent": 70,
+    "raw_items": [
+      "Continuous Assessment: 70%",
+      "Examination: 30% (2 hours)"
+    ],
+    "raw_text": "Continuous Assessment: 70%, Examination: 30% (Indicative only, please check the detailed course information GE2343.pdf).",
+    "assessment_unknown": false
   }
 }
