@@ -220,7 +220,10 @@ bool loadCoursesDb(const std::string &path,
         const bool completeSplit=c.assessment.exam_percent&&c.assessment.other_percent&&
             *c.assessment.exam_percent+*c.assessment.other_percent==100;
         c.assessment.unknown=(hasAssessmentUnknown&&assessmentUnknownDeclared)||!completeSplit;
-        courses[code]=c;pos=end;
+        const auto existing=courses.find(code);
+        courses[code]=existing==courses.end()
+            ?std::move(c):mergeCourseData(c,existing->second);
+        pos=end;
     }
     return true;
 }
