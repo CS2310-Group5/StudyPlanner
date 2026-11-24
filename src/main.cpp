@@ -403,12 +403,8 @@ int main(int argc,char**argv){
 
     if(!demo){
         printSection("Choose how course information is found");
-        printText("1) Start planning!");
-        printText("Use local course data first and look up missing details when needed.", "     ");
-        std::cout<<'\n';
-        printText("2) Scan for course updates");
-        printText("Refresh catalogue details only for course codes listed in Degree Works, then return here.", "     ");
-        std::cout<<'\n';
+        std::cout<<"  1) Start planning! — use local course data first and look up missing details when needed.\n";
+        std::cout<<"  2) Scan for course updates — refresh catalogue details only for course codes listed in Degree Works, then return here.\n";
         printInfo("Scanning first reads your Degree Works course list; login may be required. It does not choose electives or create a workbook.");
         printInfo("Press Ctrl+C at any time to stop. Completed course updates are saved; you can run the scan again later.");
     }
@@ -565,9 +561,8 @@ int main(int argc,char**argv){
             return 2;
         }
         printInfo("Scan finished. Planning has not started yet.");
-        while(readPrompt("Type 1 to continue to study planning")!="1")
-            printWarning("Enter 1 to continue to planning. Press Ctrl+C to stop the program.");
-    }
+while(readPrompt("Type 1 to continue to study planning")!="1")
+    printWarning("Enter 1 to continue to planning. Press Ctrl+C to stop the program.");
     Acquisition acq(config,mode);
     if(!demo){
         std::string acquisitionDatabaseError;
@@ -995,8 +990,7 @@ int main(int argc,char**argv){
             "Catalogue access was unavailable; local records or assumptions were used where details were missing.");
     if(!plan.warnings.empty()){
         printSection("Planning warnings");
-        for(size_t i=0;i<plan.warnings.size();++i)
-            printWarning(std::to_string(i+1)+". "+plan.warnings[i]);
+        for(const auto&warning:plan.warnings)printWarning(warning);
     }
     if(dry){
         printSection(demo?"Offline demo plan":"Dry-run plan");
@@ -1027,16 +1021,7 @@ int main(int argc,char**argv){
     std::string output,error;
     if(!exportExcel(plan,(resources/"excel_writer.py").string(),findPython(resources),
                     output,error)){writeErrorLog("OUTPUT-1",error,"Check whether the template and Python/openpyxl are available.",error);std::cout<<error<<"\n";return 32;}
-    printSection("Study plan ready");
-    const auto manualCount=std::count_if(plan.courses.begin(),plan.courses.end(),
-        [](const PlanCourse&course){return course.manual_placement;});
-    printText("Courses scheduled: "+std::to_string(plan.courses.size()-manualCount));
-    printText("Manual placement:  "+std::to_string(manualCount));
-    printText("Planning warnings: "+std::to_string(plan.warnings.size()));
-    std::cout<<'\n';
     printSuccess("Study plan saved to:");
     std::cout<<"  "<<output<<"\n";
-    std::cout<<'\n';
-    printText("Next: open the workbook and review Notes and Manual Placement before registration.");
     return 0;
 }
