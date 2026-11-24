@@ -7,8 +7,6 @@ This project is a C++17 command-line tool that builds a customizable Excel study
 **Course:** CS2310  
 **Group:** 5
 
-Names are listed in **SURNAME Given Name** format.
-
 | No. | Name | Responsibilities |
 | --- | --- | --- |
 | 1 | CHIU Wai Yan |   |
