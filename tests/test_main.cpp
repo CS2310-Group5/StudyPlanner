@@ -533,6 +533,26 @@ int main(){
     assert(hasOfferingInTerm(xMarkedNotOffered,"Year 1 Semester A"));
     assert(hasOfferingInTerm(xMarkedNotOffered,"Year 1 Semester B"));
     assert(!hasOfferingInTerm(xMarkedNotOffered,"Year 1 Summer"));
+    // Catalogue year suffixes must not turn explicit terms into unknown offerings.
+    for(const auto&label:std::vector<std::string>{"Semester A 2026/27",
+                                                 "  semester   a 2026/27  "}){
+        Course dated;dated.semesters={label};
+        assert(hasOfferingInTerm(dated,"Year 2 Semester A"));
+        assert(!hasOfferingInTerm(dated,"Year 1 Semester B"));
+        assert(!hasOfferingInTerm(dated,"Year 1 Summer"));
+    }
+    Course datedB;datedB.semesters={"Semester B 2025/26 (Tentative)"};
+    assert(!hasOfferingInTerm(datedB,"Year 1 Semester A"));
+    assert(hasOfferingInTerm(datedB,"Year 1 Semester B"));
+    Course datedSummer;datedSummer.semesters={"Summer 2027"};
+    assert(!hasOfferingInTerm(datedSummer,"Year 1 Semester A"));
+    assert(!hasOfferingInTerm(datedSummer,"Year 1 Semester B"));
+    assert(hasOfferingInTerm(datedSummer,"Year 1 Summer"));
+    assert(!hasSchedulableOffering(datedSummer));
+    datedSummer.semesters={"Semester B 2026/27","Summer 2027"};
+    assert(!hasOfferingInTerm(datedSummer,"Year 1 Semester A"));
+    assert(hasOfferingInTerm(datedSummer,"Year 1 Semester B"));
+    assert(hasOfferingInTerm(datedSummer,"Year 1 Summer"));
     assert(!canSatisfyChoiceGroup(creditChoice,{"EL1001"},electiveCourses));
     creditChoice.choose=1;
     assert(!canSatisfyChoiceGroup(creditChoice,creditChoice.candidates,electiveCourses));
@@ -758,6 +778,40 @@ int main(){
     assert(summerPlan.courses[0].manual_placement);
     assert(summerPlan.courses[0].year_semester=="Summer (manual placement)");
     assert(summerPlan.courses[0].first_term_credits==3);
+
+    // Dated Summer-only requirements stay manual; dated regular courses use
+    // their explicit terms, including when calculating the workload target.
+    DegreeRequirements datedReq;
+    datedReq.remaining_years=2;
+    datedReq.required_courses={"DATE1001","DATE1002","DATE1003"};
+    std::unordered_map<std::string,Course> datedCourses;
+    for(const auto&code:datedReq.required_courses){
+        Course c;c.code=code;c.title="Example course";
+        c.credits=3;c.credits_known=true;c.prerequisite_source="STATIC";
+        datedCourses[code]=c;
+    }
+    datedCourses["DATE1001"].semesters={"Semester A 2026/27"};
+    datedCourses["DATE1002"].semesters={"Summer 2027"};
+    datedCourses["DATE1003"].semesters={"Semester B 2026/27","Summer 2027"};
+    const auto datedPlan=makePlan(datedReq,datedCourses,{},scheduleConfig,false);
+    assert(datedPlan.courses.size()==3);
+    for(const auto&entry:datedPlan.courses){
+        assert(entry.course.semesters==datedCourses.at(entry.course.code).semesters);
+        if(entry.course.code=="DATE1002"){
+            assert(entry.manual_placement);
+            assert(entry.first_term_credits==3);
+            assert(entry.warnings.front().find("Only a Summer offering")!=std::string::npos);
+        }else{
+            assert(!entry.manual_placement);
+            assert(entry.year_semester.find(entry.course.code=="DATE1001"
+                ?"Semester A":"Semester B")!=std::string::npos);
+        }
+    }
+    auto onlyDatedSummerReq=datedReq;
+    onlyDatedSummerReq.required_courses={"DATE1002"};
+    const auto onlyDatedSummerPlan=makePlan(onlyDatedSummerReq,datedCourses,{},scheduleConfig,false);
+    assert(onlyDatedSummerPlan.courses.front().manual_placement);
+    assert(onlyDatedSummerPlan.average_credits_per_term==summerPlan.average_credits_per_term);
 
     // Summer offerings must not enter automatic schedules or workload targets.
     DegreeRequirements mixedSummerReq;
