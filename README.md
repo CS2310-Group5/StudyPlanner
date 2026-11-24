@@ -2,6 +2,22 @@
 
 This project is a C++17 command-line tool that builds a customizable Excel study plan from Degree Works requirements and shared course-catalogue data.
 
+## Course and Team Members
+
+**Course:** CS2310  
+**Group:** 5
+
+Names are listed in **SURNAME Given Name** format.
+
+| No. | Name | Responsibilities |
+| --- | --- | --- |
+| 1 | CHIU Wai Yan |   |
+| 2 | CHOW Tsz Tung |   |
+| 3 | LEE Hei Tung |   |
+| 4 | WONG Cheuk Ying |   |
+| 5 | WONG Lai Lam | implement the initial working version of the study planner: a program skeleton that retrieves required courses from the degree works, lets user select electives, and exports the result to Excel, together with the course-website scraping script. |
+
+
 ## Build
 
 Requirements: CMake 3.20+, a C++17 compiler, libcurl, Python 3, and `openpyxl` for the Excel-export smoke test. Playwright and Chromium are only needed for live Degree Works login.
