@@ -70,7 +70,7 @@ def run(executable, data_root, input_text, args=()):
     environment = os.environ.copy()
     environment.update(overrides)
     return subprocess.run(
-        [str(executable), *args],
+        [str(executable), *(args or ("--choose-mode",))],
         input=input_text,
         capture_output=True,
         text=True,
@@ -118,7 +118,7 @@ def run_area_choice(executable, data_root, area_data_path):
     environment = os.environ.copy()
     environment.update(overrides)
     process = subprocess.Popen(
-        [str(executable)],
+        [str(executable), "--choose-mode"],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
