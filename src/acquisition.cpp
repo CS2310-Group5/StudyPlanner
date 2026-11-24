@@ -21,7 +21,8 @@ bool challenge(const std::string&s){
     return l.find("incapsula")!=std::string::npos||l.find("captcha")!=std::string::npos||
            l.find("request unsuccessful")!=std::string::npos||l.find("challenge")!=std::string::npos||
            l.find("access denied")!=std::string::npos||l.find("additional check")!=std::string::npos||
-           l.find("verify you are human")!=std::string::npos;
+           l.find("verify you are human")!=std::string::npos||
+           l.find("incident id")!=std::string::npos;
 }
 bool cacheIsFresh(const std::string &path,int ttlHours){
     std::error_code ec;
@@ -189,6 +190,7 @@ std::vector<std::string> parseCourseOfferingTerms(const std::string &html){
 Course parseCoursePageHtml(const std::string &code,const std::string &url,
                            const std::string &html){
     Course course;
+   
     course.code=code;
     course.url=url;
     course.catalogue_detail_available=true;
@@ -472,3 +474,4 @@ AcquisitionResult Acquisition::fetch(const std::string &code,bool refresh){
     }
     return r;
 }
+
