@@ -4,6 +4,36 @@
 #include <unordered_set>
 #include <functional>
 #include <set>
+#include <regex>
+
+namespace {
+std::string offeringTerm(const std::string&label){
+    // Year/tentative suffixes describe the catalogue entry, not another term.
+    // Keep unknown labels intact so the existing provisional fallback applies.
+    static const std::regex termPrefix(
+        R"(^\s*(Semester\s+A|Semester\s+B|Summer)\b)",std::regex::icase);
+    std::smatch match;
+    if(!std::regex_search(label,match,termPrefix))return label;
+    std::string term=match[1].str();
+    term.erase(std::remove_if(term.begin(),term.end(),
+        [](unsigned char ch){return std::isspace(ch);}),term.end());
+    std::transform(term.begin(),term.end(),term.begin(),
+        [](unsigned char ch){return static_cast<char>(std::tolower(ch));});
+    if(term=="semestera")return "Semester A";
+    if(term=="semesterb")return "Semester B";
+    return "Summer";
+}
+
+bool summerOnlyOffering(const Course&course){
+    bool summer=false;
+    for(const auto&label:course.semesters){
+        const auto term=offeringTerm(label);
+        if(term=="Summer")summer=true;
+        else if(term!="Not offered"&&term!="X")return false;
+    }
+    return summer;
+}
+}
 
 bool hasSchedulableOffering(const Course&course){
     return hasOfferingInTerm(course,"Semester A")||
@@ -12,15 +42,17 @@ bool hasSchedulableOffering(const Course&course){
 
 bool hasOfferingInTerm(const Course&course,const std::string&term){
     const bool summer=term.find("Summer")!=std::string::npos;
-    if(course.semesters.empty())return !summer;
-    if(std::find(course.semesters.begin(),course.semesters.end(),"Any term")!=
-       course.semesters.end())return !summer;
+    std::vector<std::string> offerings;
+    for(const auto&label:course.semesters)offerings.push_back(offeringTerm(label));
+    if(offerings.empty())return !summer;
+    if(std::find(offerings.begin(),offerings.end(),"Any term")!=
+       offerings.end())return !summer;
     if(summer)
-        return std::find(course.semesters.begin(),course.semesters.end(),"Summer")!=
-               course.semesters.end();
+        return std::find(offerings.begin(),offerings.end(),"Summer")!=
+               offerings.end();
     const std::string semester=term.find("Semester B")!=std::string::npos
         ?"Semester B":"Semester A";
-    for(const auto&offering:course.semesters){
+    for(const auto&offering:offerings){
         if(offering==semester||offering=="Not offered"||offering=="X")
             return true;
         if(offering!="Summer"&&offering!="Semester A"&&offering!="Semester B")
@@ -363,15 +395,7 @@ Plan makePlan(const DegreeRequirements &req,
         std::transform(lowered.begin(),lowered.end(),lowered.begin(),
             [](unsigned char ch){return static_cast<char>(std::tolower(ch));});
         if(lowered.find("internship")!=std::string::npos)continue;
-        const bool summerOnly=!course->semesters.empty()&&
-            std::find(course->semesters.begin(),course->semesters.end(),"Summer")!=
-                course->semesters.end()&&
-            std::none_of(course->semesters.begin(),course->semesters.end(),
-                [](const std::string&term){
-                    return term=="Semester A"||term=="Semester B"||
-                           (term!="Summer"&&term!="Not offered"&&term!="X");
-                });
-        if(summerOnly)continue;
+        if(summerOnlyOffering(*course))continue;
         for(size_t term=static_cast<size_t>(plan.start_term_index);
             term<terms.size();++term)
             if(term%3!=2&&hasOfferingInTerm(*course,terms[term]))
@@ -447,14 +471,7 @@ Plan makePlan(const DegreeRequirements &req,
             // Summer remains a manual-planning column, even if offered.
             return term%3!=2&&(inProgress||hasOfferingInTerm(course,terms[term]));
         };
-        const bool hasNonSummerOffering=course.semesters.empty()||
-            std::any_of(course.semesters.begin(),course.semesters.end(),
-                [](const std::string&term){
-                    return term!="Summer"&&term!="Not offered"&&term!="X";
-                });
-        const bool summerOnly=!course.semesters.empty()&&
-            std::find(course.semesters.begin(),course.semesters.end(),"Summer")!=
-                course.semesters.end()&&!hasNonSummerOffering;
+        const bool summerOnly=summerOnlyOffering(course);
         const bool manualPrerequisite=std::any_of(
             course.prerequisites.begin(),course.prerequisites.end(),
             [&manualPlacementCodes](const std::string&prerequisite){
