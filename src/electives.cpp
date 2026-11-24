@@ -480,11 +480,12 @@ ElectivePickerResult selectElectives(
                     }
                 }
                 if (!found)
-                    printInfo("No verified candidates in this area on the current page.");
+                    printInfo("No verified candidates in this area.");
             }
         };
         constexpr size_t pageSize = 20;
         const auto pageEnd = [&](size_t begin) {
+            if (!group.areas.empty()) return displayOrder.size();
             size_t end = std::min(displayOrder.size(), begin + pageSize);
             if (end >= displayOrder.size()) return displayOrder.size();
             const auto current =
