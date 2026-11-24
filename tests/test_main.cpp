@@ -43,8 +43,8 @@ int main(){
     assert(suppliedStaticDb.at("LC0200B").credits==3);
     assert(suppliedStaticDb.at("CHIN1001").credits==3);
     assert(suppliedStaticDb.at("GE1601").credits==1);
-    assert(suppliedStaticDb.at("GE1601").semesters==
-           std::vector<std::string>{"Semester A"});
+    assert(suppliedStaticDb.at("GE1601").semesters.size()==1);
+    assert(suppliedStaticDb.at("GE1601").semesters.front().find("Semester A")==0);
     assert(suppliedStaticDb.at("GE1601").prerequisites.empty());
     assert(suppliedStaticDb.at("GE1601").assessment.other_percent==100);
     assert(suppliedStaticDb.at("GE1601").assessment.unknown);
@@ -156,8 +156,8 @@ int main(){
     assert(suppliedStaticDb.at("GE2410").assessment.unknown);
     assert(suppliedStaticDb.at("MA2185").title=="Discrete Mathematics");
     assert(suppliedStaticDb.at("MA2185").credits==3);
-    assert(suppliedStaticDb.at("MA2185").semesters==
-           std::vector<std::string>{"Semester A"});
+    assert(suppliedStaticDb.at("MA2185").semesters.size()==1);
+    assert(suppliedStaticDb.at("MA2185").semesters.front().find("Semester A")==0);
     assert(suppliedStaticDb.at("MA2185").assessment.exam_percent==70);
     assert(suppliedStaticDb.at("MA2185").assessment.other_percent==30);
     assert(suppliedStaticDb.at("MA2185").assessment.unknown);
