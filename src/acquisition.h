@@ -29,6 +29,8 @@ public:
     bool loadStaticDb(const std::string &path, std::string &error);
     bool loadFallbackDb(const std::string &path, std::string &error);
     AcquisitionResult fetch(const std::string &code, bool refresh);
+    std::vector<std::string> pendingNetworkFetchCodes(
+        const std::vector<std::string> &codes, bool refresh) const;
     std::size_t pendingNetworkFetches(const std::vector<std::string> &codes,
                                       bool refresh) const;
     std::vector<std::string> unavailableWithoutNetwork(

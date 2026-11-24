@@ -597,7 +597,12 @@ int main(int argc,char**argv){
         }
         lookupNeeded.push_back(code);
     }
-    const std::size_t networkCount=demo?0:acq.pendingNetworkFetches(lookupNeeded,refresh);
+    const std::vector<std::string> networkLookupCodes=demo
+        ?std::vector<std::string>{}
+        :acq.pendingNetworkFetchCodes(lookupNeeded,refresh);
+    const std::unordered_set<std::string> networkLookupSet(
+        networkLookupCodes.begin(),networkLookupCodes.end());
+    const std::size_t networkCount=networkLookupCodes.size();
     if(demo){
         printSection("Offline demo");
         printInfo("Using the bundled catalogue; no network lookups will be made.");
@@ -643,12 +648,14 @@ int main(int argc,char**argv){
             lookupsCancelled=true;
         }
     }
-    for(size_t courseIndex=0;courseIndex<needed.size();++courseIndex){
-        const auto&code=needed[courseIndex];
+    size_t networkProgress=0;
+    for(const auto&code:needed){
         if(networkCount>0&&!blockReported&&!lookupsCancelled&&
-           !assumedOfferingOnly.count(code)&&!scannedCourseCodes.count(code))
-            printInfo("Checking course "+std::to_string(courseIndex+1)+" of "+
-                      std::to_string(needed.size())+": "+code);
+           networkLookupSet.count(code)){
+            ++networkProgress;
+            printInfo("Checking course "+std::to_string(networkProgress)+" of "+
+                      std::to_string(networkCount)+": "+code);
+        }
         AcquisitionResult ar;
         if(demo){
             ar.course=db.at(code);

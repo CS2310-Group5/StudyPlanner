@@ -65,6 +65,53 @@ std::string elementText(const std::string &html,const std::string &id){
     }
     return {};
 }
+std::string normalizedLabel(std::string text){
+    text=plainText(text);
+    std::string normalized;
+    for(unsigned char ch:text)
+        if(std::isalnum(ch))
+            normalized+=static_cast<char>(std::tolower(ch));
+    return normalized;
+}
+std::string tableFieldText(const std::string&html,const std::string&label){
+    const std::string wanted=normalizedLabel(label);
+    const std::regex row(R"(<tr\b[^>]*>([\s\S]*?)</tr\s*>)",
+                         std::regex_constants::icase);
+    const std::regex cell(R"(<t[dh]\b[^>]*>([\s\S]*?)</t[dh]\s*>)",
+                          std::regex_constants::icase);
+    for(std::sregex_iterator rowIt(html.begin(),html.end(),row),rowEnd;
+        rowIt!=rowEnd;++rowIt){
+        std::vector<std::string> cells;
+        const std::string rowHtml=(*rowIt)[1].str();
+        for(std::sregex_iterator cellIt(rowHtml.begin(),rowHtml.end(),cell),
+            cellEnd;cellIt!=cellEnd;++cellIt)
+            cells.push_back(plainText((*cellIt)[1].str()));
+        if(cells.size()<2)continue;
+        const std::string actual=normalizedLabel(cells.front());
+        if(actual==wanted||actual.rfind(wanted,0)==0){
+            std::string value;
+            for(size_t i=1;i<cells.size();++i){
+                if(!value.empty())value+=" ";
+                value+=cells[i];
+            }
+            return value;
+        }
+    }
+    return {};
+}
+std::string courseTitleFromTable(const std::string&html,const std::string&code){
+    const std::regex row(R"(<tr\b[^>]*>([\s\S]*?)</tr\s*>)",
+                         std::regex_constants::icase);
+    const std::regex titlePattern(
+        "^\\s*"+code+"\\s*[-:]\\s*(.+?)\\s*$",
+        std::regex_constants::icase);
+    for(std::sregex_iterator it(html.begin(),html.end(),row),end;it!=end;++it){
+        const std::string text=plainText((*it)[1].str());
+        std::smatch match;
+        if(std::regex_match(text,match,titlePattern))return match[1].str();
+    }
+    return {};
+}
 std::vector<std::string> parseExclusiveCourseCodes(const std::string&html,
                                                    const std::string&currentCode){
     std::string value=elementText(html,"div_exclusive_courses");
@@ -175,11 +222,16 @@ std::vector<std::string> parseCourseOfferingTerms(const std::string &html){
         R"(<([a-zA-Z][a-zA-Z0-9]*)\b[^>]*\bid\s*=\s*["'][^"']*course_offering_term[^"']*["'][^>]*>([\s\S]*?)</\1\s*>)",
         std::regex_constants::icase);
     std::smatch match;
-    if(!std::regex_search(html,match,element))return {};
-    std::string text=plainText(match[2].str());
+    std::string text;
+    if(std::regex_search(html,match,element))
+        text=plainText(match[2].str());
+    else
+        text=tableFieldText(html,"Course Offering Term");
+    if(text.empty())return {};
     std::transform(text.begin(),text.end(),text.begin(),
         [](unsigned char ch){return static_cast<char>(std::tolower(ch));});
-    if(text.find("not offering")!=std::string::npos)return {"Not offered"};
+    if(text.find("not offering")!=std::string::npos||
+       text.find("not offered")!=std::string::npos)return {"Not offered"};
     std::vector<std::string> terms;
     if(text.find("semester a")!=std::string::npos)terms.push_back("Semester A");
     if(text.find("semester b")!=std::string::npos)terms.push_back("Semester B");
@@ -200,6 +252,7 @@ Course parseCoursePageHtml(const std::string &code,const std::string &url,
                    std::regex_constants::icase)))
         course.catalogue_year=yearMatch[1].str();
     course.title=elementText(html,"div_course_code_and_title");
+    if(course.title.empty())course.title=courseTitleFromTable(html,code);
     if(course.title.rfind(code,0)==0){
         course.title.erase(0,code.size());
         while(!course.title.empty()&&
@@ -209,7 +262,8 @@ Course parseCoursePageHtml(const std::string &code,const std::string &url,
     }
 
     std::smatch match;
-    const std::string creditText=elementText(html,"div_course_credits");
+    std::string creditText=elementText(html,"div_course_credits");
+    if(creditText.empty())creditText=tableFieldText(html,"Credit Units");
     if(std::regex_search(creditText,match,std::regex(R"(([0-9]+))"))){
         course.credits=std::stoi(match[1]);
         course.credits_known=true;
@@ -218,7 +272,9 @@ Course parseCoursePageHtml(const std::string &code,const std::string &url,
     course.assessment=parseCourseAssessment(html);
     course.exclusive_courses=parseExclusiveCourseCodes(html,code);
 
-    const std::string prerequisites=elementText(html,"div_prerequisites");
+    std::string prerequisites=elementText(html,"div_prerequisites");
+    if(prerequisites.empty())prerequisites=tableFieldText(html,"Pre-requisite");
+    if(prerequisites.empty())prerequisites=tableFieldText(html,"Prerequisites");
     course.prerequisites_text=prerequisites;
     if(!prerequisites.empty()){
         std::string normalized=prerequisites;
@@ -248,6 +304,7 @@ Course parseCoursePageHtml(const std::string &code,const std::string &url,
         course.prerequisite_source="UNKNOWN";
         course.prerequisites={"UNKNOWN"};
     }
+    course.area=tableFieldText(html,"GE Area");
     const std::string area=elementText(html,"div_ge_area");
     if(area.find("Area 1")!=std::string::npos)course.area="1";
     else if(area.find("Area 2")!=std::string::npos)course.area="2";
@@ -295,10 +352,10 @@ bool Acquisition::loadFallbackDb(const std::string&path,std::string&error){
     return true;
 }
 
-std::size_t Acquisition::pendingNetworkFetches(const std::vector<std::string> &codes,
-                                               bool refresh) const{
+std::vector<std::string> Acquisition::pendingNetworkFetchCodes(
+        const std::vector<std::string>&codes,bool refresh) const{
     std::unordered_set<std::string> unique(codes.begin(),codes.end());
-    std::size_t count=0;
+    std::vector<std::string> pending;
     for(const auto&code:unique){
         auto local=db_.find(code);
         if(mode_==AcquisitionMode::STATIC_FIRST&&!refresh&&
@@ -310,9 +367,15 @@ std::size_t Acquisition::pendingNetworkFetches(const std::vector<std::string> &c
                local==db_.end()?Course{}:local->second,fallback->second)))
             continue;
         if(!refresh&&cacheIsFresh(".cityu_cache/"+code+".html",config_.cache_ttl_hours))continue;
-        ++count;
+        pending.push_back(code);
     }
-    return count;
+    std::sort(pending.begin(),pending.end());
+    return pending;
+}
+
+std::size_t Acquisition::pendingNetworkFetches(const std::vector<std::string> &codes,
+                                               bool refresh) const{
+    return pendingNetworkFetchCodes(codes,refresh).size();
 }
 
 std::vector<std::string> Acquisition::unavailableWithoutNetwork(
