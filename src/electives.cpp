@@ -409,48 +409,50 @@ ElectivePickerResult selectElectives(
         const auto printCandidate = [&](size_t row) {
             const auto &code = ranked[displayOrder[row]];
             const auto it = courses.find(code);
-            std::cout << "  " << row + 1 << ") " << code;
+            std::ostringstream heading;
+            heading << row + 1 << ") " << code;
             if (it != courses.end() && !it->second.title.empty())
-                std::cout << " — " << it->second.title;
+                heading << " — " << it->second.title;
             if (it != courses.end())
-                std::cout << " | " << electiveCredits(it->second)
+                heading << " | " << electiveCredits(it->second)
                     << " credits" << (it->second.credits_known
                         ? "" : " (assumed)");
-            std::cout << "\n";
+            printText(heading.str());
             if (it != courses.end()) {
                 const int area = courseArea(it->second);
                 if (area > 0) std::cout << "     Area " << area << "\n";
                 const std::string prerequisites =
                     prerequisiteSummary(it->second, requirements, chosen);
                 if (!prerequisites.empty())
-                    std::cout << "     " << prerequisites << "\n";
+                    printText(prerequisites, "     ");
                 if (!it->second.semesters.empty()) {
-                    std::cout << "     Offering: ";
+                    std::ostringstream offering;
+                    offering << "Offering: ";
                     for (size_t term = 0;
                          term < it->second.semesters.size(); ++term) {
-                        if (term) std::cout << ", ";
-                        std::cout << it->second.semesters[term];
+                        if (term) offering << ", ";
+                        offering << it->second.semesters[term];
                     }
                     if (std::find(it->second.semesters.begin(),
                                   it->second.semesters.end(),
                                   "Not offered") !=
                         it->second.semesters.end())
-                        std::cout << " (provisionally treated as Semester A/B)";
-                    std::cout << "\n";
+                        offering << " (provisionally treated as Semester A/B)";
+                    printText(offering.str(), "     ");
                 }
                 if (it->second.semesters.empty() ||
                     std::find(it->second.semesters.begin(), it->second.semesters.end(), "X") !=
                         it->second.semesters.end())
-                    std::cout << "     Offering unconfirmed: provisionally treated as Semester A/B, not Summer\n";
+                    printText("Offering unconfirmed: provisionally treated as Semester A/B, not Summer", "     ");
                 if (!it->second.assessment.unknown &&
                     it->second.assessment.exam_percent &&
                     it->second.assessment.other_percent)
-                    std::cout << "     Assessment: Exam "
-                        << *it->second.assessment.exam_percent
-                        << "%; coursework "
-                        << *it->second.assessment.other_percent << "%\n";
+                    printText("Assessment: Exam " +
+                        std::to_string(*it->second.assessment.exam_percent) +
+                        "%; coursework " +
+                        std::to_string(*it->second.assessment.other_percent) + "%", "     ");
                 else
-                    std::cout << "     Assessment: Unknown / unconfirmed (no preference penalty)\n";
+                    printText("Assessment: Unknown / unconfirmed (no preference penalty)", "     ");
                 const std::string url = it->second.url.empty()
                     ? "https://www.cityu.edu.hk/catalogue/ug/current/course/" +
                         code + ".htm"

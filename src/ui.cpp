@@ -12,6 +12,7 @@
 #include <io.h>
 #else
 #include <unistd.h>
+#include <sys/ioctl.h>
 #endif
 
 namespace {
@@ -28,6 +29,48 @@ bool colorEnabled() {
 std::string color(const std::string &text, const char *code) {
     if (!colorEnabled()) return text;
     return std::string("\033[") + code + "m" + text + "\033[0m";
+}
+
+size_t lineWidth() {
+    size_t width = 78;
+#ifndef _WIN32
+    winsize terminal{};
+    if (isatty(STDOUT_FILENO) && ioctl(STDOUT_FILENO, TIOCGWINSZ, &terminal) == 0 &&
+        terminal.ws_col > 0)
+        width = terminal.ws_col;
+#endif
+    return std::clamp(width, size_t{40}, size_t{96});
+}
+
+size_t textWidth(const std::string &text) {
+    // Count UTF-8 characters rather than bytes (titles may contain an em dash).
+    return static_cast<size_t>(std::count_if(text.begin(), text.end(),
+        [](unsigned char ch) { return (ch & 0xc0) != 0x80; }));
+}
+
+void writeWrapped(const std::string &message, const std::string &prefix,
+                  const std::string &continuation, const char *style = "0") {
+    std::istringstream paragraphs(message);
+    std::string paragraph;
+    bool first = true;
+    while (std::getline(paragraphs, paragraph)) {
+        std::istringstream words(paragraph);
+        std::string word;
+        std::string line = first ? prefix : continuation;
+        bool hasWord = false;
+        while (words >> word) {
+            if (hasWord && textWidth(line) + 1 + textWidth(word) > lineWidth()) {
+                std::cout << color(line, style) << '\n';
+                line = continuation;
+                hasWord = false;
+            }
+            if (hasWord) line += ' ';
+            line += word;
+            hasWord = true;
+        }
+        std::cout << color(line, style) << '\n';
+        first = false;
+    }
 }
 
 std::string trim(std::string text) {
@@ -100,29 +143,38 @@ bool confirm(const std::string &prompt) {
 }
 
 void showStartScreen() {
-    std::cout << color("┌──────────────────────────────────────────────────────────┐", "36") << "\n";
-    std::cout << color("│                CITYU STUDY PLAN GENERATOR                │", "1;36") << "\n";
-    std::cout << color("└──────────────────────────────────────────────────────────┘", "36") << "\n";
-    std::cout << "Creates a study-plan workbook from Degree Works and CityU course data.\n\n";
+    printSection("CITYU STUDY PLAN GENERATOR");
+    printText("Creates a study-plan workbook from Degree Works and CityU course data.");
+    std::cout << '\n';
     printInfo("Privacy: your password is never stored; session and study files stay in your account's application data folder.");
-    std::cout << "Type DELETE to remove saved session and study files; Q asks before quitting and deleting them.\n";
-    std::cout << "CLEAN removes cached pages, logs, and URL overrides; the catalogue cooldown is kept.\n\n";
+    std::cout << '\n';
+    writeWrapped("Remove saved session and study files.", "  DELETE  ", "          ");
+    writeWrapped("Ask before quitting and deleting those files.", "  Q       ", "          ");
+    writeWrapped("Remove cached pages, logs and URL overrides; keep the catalogue cooldown.", "  CLEAN   ", "          ");
 }
 
 void printSection(const std::string &title) {
-    std::cout << "\n\n" << color("◆ ", "36") << color(title, "1;36") << "\n\n";
+    const std::string rule(lineWidth() - 2, '-');
+    std::cout << '\n' << color("  " + rule, "36") << '\n';
+    writeWrapped(title, "  ◆ ", "    ", "1;36");
+    std::cout << color("  " + rule, "36") << "\n\n";
+}
+
+void printText(const std::string &message, const std::string &indent) {
+    writeWrapped(message, indent, indent);
 }
 
 void printInfo(const std::string &message) {
-    std::cout << color("INFO  ", "36") << message << "\n";
+    writeWrapped(message, "  INFO  ", "        ");
 }
 
 void printSuccess(const std::string &message) {
-    std::cout << color("DONE  ", "32") << message << "\n";
+    writeWrapped(message, "  DONE  ", "        ", "1;32");
 }
 
 void printWarning(const std::string &message) {
-    std::cout << color("NOTE  ", "33") << message << "\n";
+    writeWrapped(message, "  NOTE  ", "        ", "33");
+    std::cout << '\n';
 }
 
 bool privacyConfirm() {
@@ -139,7 +191,15 @@ bool privacyConfirm() {
 
 std::string readPrompt(const std::string &prompt) {
     while (true) {
-        std::cout << color(prompt, "1") << "\n> ";
+        std::cout << '\n';
+        const auto separator = prompt.find("; ");
+        if (separator != std::string::npos) {
+            writeWrapped(prompt.substr(0, separator), "  ", "  ", "1");
+            writeWrapped(prompt.substr(separator + 2), "  ", "  ", "1");
+        } else {
+            writeWrapped(prompt, "  ", "  ", "1");
+        }
+        std::cout << color("  > ", "1;36") << std::flush;
         std::string typed;
         if (!std::getline(std::cin, typed)) {
             std::cerr << "\nInput closed. Exiting without deleting stored data.\n";
