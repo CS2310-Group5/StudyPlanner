@@ -1021,7 +1021,7 @@ def main():
             f"Mapped Degree Works area choices failed:\n"
             f"{area_result.stdout}\n{area_result.stderr}"
         )
-    if "different listed areas" not in area_result.stdout:
+    if "different listed areas" not in " ".join(area_result.stdout.split()):
         raise AssertionError("A same-area 6-credit choice was not explained clearly")
     for area in ("◆ Area 1", "◆ Area 2", "◆ Area 3"):
         if area not in area_result.stdout:
@@ -1297,7 +1297,7 @@ def main():
         )
     if "Scan for course updates" not in full_dynamic.stdout:
         raise AssertionError("The audit-only course update option was not shown")
-    if "Unique Degree Works course codes to check: 1." not in full_dynamic.stdout:
+    if "Unique Degree Works course codes found in audit: 1." not in full_dynamic.stdout:
         raise AssertionError("The update scan did not restrict itself to audit course codes")
     if "Course update scan cancelled; no scan requests were started." not in full_dynamic.stdout:
         raise AssertionError("Course update scan cancellation was not reported")
@@ -1435,7 +1435,7 @@ def main():
             "A malformed course page should be reported and planning should continue:\n"
             f"{malformed_scan.stdout}\n{malformed_scan.stderr}"
         )
-    if "did not contain readable credit units" not in malformed_scan.stdout:
+    if "did not contain readable credit units" not in " ".join(malformed_scan.stdout.split()):
         raise AssertionError("A malformed catalogue page was reported as a successful update")
     if "update failures: 1" not in malformed_scan.stdout:
         raise AssertionError("The scan summary omitted its malformed-page failure")
@@ -1486,7 +1486,7 @@ def main():
             "A catalogue block should stop the scan and still permit planning:\n"
             f"{blocked_scan.stdout}\n{blocked_scan.stderr}"
         )
-    if "blocked or challenged the scan; remaining requests were stopped" not in blocked_scan.stdout:
+    if "blocked or challenged the scan; remaining requests were stopped" not in " ".join(blocked_scan.stdout.split()):
         raise AssertionError("The scan did not stop after a block response")
     if "not attempted: 1" not in blocked_scan.stdout:
         raise AssertionError("The scan summary did not report courses skipped after a block")
@@ -1514,7 +1514,7 @@ def main():
         raise AssertionError(f"Missing course fields were not identified:\n{blocked.stdout}")
     if "Catalogue cooldown remains" not in blocked.stdout:
         raise AssertionError(f"Cooldown was not connected to the missing data:\n{blocked.stdout}")
-    if "no scan requests were started" not in blocked.stdout:
+    if "no scan requests were started" not in " ".join(blocked.stdout.split()):
         raise AssertionError("The scan cooldown handling did not prevent network requests")
     if "Entry type:" in blocked.stdout or "Topics you do not prefer" in blocked.stdout:
         raise AssertionError("Preference questions appeared before data feasibility was known")

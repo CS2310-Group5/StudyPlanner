@@ -3,6 +3,7 @@
 #include "config.h"
 #include "acquisition.h"
 #include "database_builder.h"
+#include "course_update_scan.h"
 #include "electives.h"
 #include "json.h"
 #include "runtime_paths.h"
@@ -1156,7 +1157,7 @@ int main(){
         audit.major_courses = {"NOT-A-COURSE", "AB123"};    // invalid codes
         audit.non_degree_courses = {"GE1401"};
         ChoiceGroup g;
-        g.candidates = {"CS2311", "CS2310", "XX9999Y"};     // another duplicate
+        g.candidates = {"CS2311", "CS2310", "XX9999YY"};    // duplicate + invalid suffix
         audit.choice_groups = {g};
 
         const auto codes = degreeWorksCourseCodes(audit);
@@ -1171,7 +1172,7 @@ int main(){
         // invalid codes must be filtered out
         assert(std::find(codes.begin(), codes.end(), "NOT-A-COURSE") == codes.end());
         assert(std::find(codes.begin(), codes.end(), "AB123") == codes.end());
-        assert(std::find(codes.begin(), codes.end(), "XX9999Y") == codes.end());
+        assert(std::find(codes.begin(), codes.end(), "XX9999YY") == codes.end());
     }
 
 
