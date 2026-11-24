@@ -48,7 +48,6 @@ The project is intended as an advising aid, not a replacement for Degree Works, 
 - Maintains a personal course database while providing a shared bundled catalogue.
 - Refreshes only course codes present in the student's audit when the course-update scan is requested.
 - Ranks electives primarily by prerequisite readiness, then by topic and assessment preferences.
-- Splits teaching areas into clear Area 1, Area 2, and Area 3 sections.
 - Excludes in-progress credits from remaining-credit workload targets.
 - Balances remaining credits across future offered terms, while preserving the student's Degree Works horizon.
 - Produces a formatted workbook with year and semester borders, total credits, manual-placement entries, notes, links, and assumptions.
