@@ -44,8 +44,6 @@ if(BUILD_TESTING)
       src/page_parser.cpp
       src/acquisition.cpp
       src/database_builder.cpp
-      src/course_update_scan.cpp
-      src/logging.cpp
       src/electives.cpp
       src/planner.cpp
       src/ui.cpp
