@@ -1284,6 +1284,49 @@ def main():
     if "Study plan saved to:" not in lookup.stdout:
         raise AssertionError("Declining a lookup did not produce the workbook")
 
+    progress_root = data_root / f"lookup-progress-count-{time.time_ns()}"
+    progress_directory, _ = user_data_directory(progress_root)
+    prepare_user_data(
+        progress_directory,
+        degree_metadata + "Still Needed:\n3 credits in AA9001\n3 credits in GE1501\n",
+    )
+    progress_server = http.server.ThreadingHTTPServer(
+        ("127.0.0.1", 0), CatalogueFixtureHandler
+    )
+    progress_thread = threading.Thread(
+        target=progress_server.serve_forever, daemon=True
+    )
+    progress_thread.start()
+    CatalogueFixtureHandler.requests = []
+    try:
+        (progress_directory / "overrides.json").write_text(
+            json.dumps({
+                "course": "AA9001",
+                "url": f"http://127.0.0.1:{progress_server.server_port}/AA9001.htm",
+            }) + "\n",
+            encoding="utf-8",
+        )
+        progress_result, _ = run(
+            executable, progress_root, "1\nOK\n1\n1\n1\n"
+        )
+    finally:
+        progress_server.shutdown()
+        progress_server.server_close()
+        progress_thread.join(timeout=5)
+    if progress_result.returncode != 0:
+        raise AssertionError(
+            "A one-course online lookup should complete:\n"
+            f"{progress_result.stdout}\n{progress_result.stderr}"
+        )
+    if "Catalogue lookups needed: 1" not in progress_result.stdout or \
+       "Checking course 1 of 1: AA9001" not in progress_result.stdout:
+        raise AssertionError(
+            "Lookup progress should count only network requests:\n"
+            f"{progress_result.stdout}"
+        )
+    if CatalogueFixtureHandler.requests != ["/AA9001.htm"]:
+        raise AssertionError("The progress test requested an unexpected course")
+
     full_dynamic_root = data_root / "full-dynamic-cancel"
     full_dynamic_directory, _ = user_data_directory(full_dynamic_root)
     prepare_user_data(

@@ -559,6 +559,8 @@ int main(){
     Config config;
     Acquisition acquisition(config,AcquisitionMode::FULL_DYNAMIC);
     assert(acquisition.pendingNetworkFetches({"LC0200A"},true)==1);
+    assert(acquisition.pendingNetworkFetchCodes({"LC0200A"},true)==
+           std::vector<std::string>{"LC0200A"});
     Acquisition localOnly(config,AcquisitionMode::STATIC_FIRST);
     std::string localDatabaseError;
     assert(localOnly.loadStaticDb("../tests/fixtures/legacy_courses.json",
@@ -994,6 +996,21 @@ int main(){
     assert(indicativeCourse.assessment.exam_percent==50);
     assert(indicativeCourse.assessment.other_percent==50);
     assert(indicativeCourse.assessment.unknown);
+    const Course tableCourse=parseCoursePageHtml(
+        "GE1107","https://www.cityu.edu.hk/catalogue/ug/current/course/GE1107.htm",
+        "<table>"
+        "<tr><td><strong>GE1107 - Cities in Chinese History and Culture</strong></td></tr>"
+        "<tr><td><strong>Credit Units</strong></td><td>3</td></tr>"
+        "<tr><td><strong>GE Area</strong></td><td>Area 1: Arts and Humanities</td></tr>"
+        "<tr><td><strong>Course Offering Term*</strong></td>"
+        "<td>Not offering in current academic year</td></tr>"
+        "<tr><td><strong>Pre-requisite(s)</strong></td><td>None</td></tr>"
+        "</table>");
+    assert(tableCourse.title=="Cities in Chinese History and Culture");
+    assert(tableCourse.credits_known&&tableCourse.credits==3);
+    assert(tableCourse.area=="Area 1: Arts and Humanities");
+    assert(tableCourse.semesters==std::vector<std::string>{"Not offered"});
+    assert(tableCourse.prerequisites.empty());
 
     PastedCourseDatabase pasted;
     std::string pastedError;
