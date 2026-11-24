@@ -92,8 +92,14 @@ std::unordered_set<std::string> scanDegreeWorksCourseUpdates(
         } else {
             const std::size_t scanCount =
                 scanner.pendingNetworkFetches(courseCodes, true);
-            printInfo("Unique Degree Works course codes to check: " +
-                      std::to_string(courseCodes.size()) + ".");
+            printInfo("Unique Degree Works course codes found in audit: " +
+          std::to_string(courseCodes.size()) + ".");
+const std::size_t alreadyComplete = courseCodes.size() - scanCount;
+if (alreadyComplete > 0)
+    printInfo(std::to_string(alreadyComplete) +
+              " course(s) already have complete local details.");
+printInfo(std::to_string(scanCount) +
+          " course(s) still need a catalogue refresh.");
             const long long remaining = scanner.cooldownRemainingSeconds();
             if (scanner.catalogueCoolingDown()) {
                 printWarning("Catalogue access is cooling down for about " +
@@ -185,12 +191,16 @@ std::unordered_set<std::string> scanDegreeWorksCourseUpdates(
                         currentCourses[code] = std::move(primary);
                     }
                     printSection("Course update scan summary");
-                    printInfo("Updated: " + std::to_string(updated) +
-                        "; update failures: " + std::to_string(failed) +
-                        "; save failures: " + std::to_string(saveFailures) +
-                        "; not attempted: " +
-                        std::to_string(courseCodes.size() -
-                                       attemptedCodes.size()) + ".");
+printInfo("Updated: " + std::to_string(updated) +
+    "; update failures: " + std::to_string(failed) +
+    "; save failures: " + std::to_string(saveFailures) +
+    "; not attempted: " +
+    std::to_string(courseCodes.size() -
+                   attemptedCodes.size()) + ".");
+if (failed > 0 || saveFailures > 0)
+    printInfo("You can run the course update scan again later to retry the remaining courses.");
+if (scanner.catalogueCoolingDown())
+    printWarning("Catalogue access is currently cooling down. Wait before starting another scan.");
                 }
             }
         }
